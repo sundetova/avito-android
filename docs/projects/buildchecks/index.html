@@ -1,0 +1,227 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Build checks Gradle plugin This plugin verifies common build problems with environment and project configuration.
+Getting started Apply the plugin in the root build script:
+plugins { id(&#34;com.avito.android.buildchecks&#34;) } In the settings.gradle:
+pluginManagement { repositories { maven { name = &#34;Avito bintray&#34; url = &#34;https://dl.bintray.com/avito/maven&#34; } } resolutionStrategy { eachPlugin { String pluginId = requested.id.id if (pluginId.startsWith(&#34;com.avito.android&#34;)) { def artifact = pluginId.replace(&#34;com.avito.android.&#34;, &#34;&#34;) useModule(&#34;com.avito.android:$artifact:$avitoToolsVersion&#34;) } } } } avitoToolsVersion could be exact version, or property in project&rsquo;s gradle."><meta property="og:title" content="Build checks Gradle plugin"><meta property="og:description" content="Build checks Gradle plugin This plugin verifies common build problems with environment and project configuration.
+Getting started Apply the plugin in the root build script:
+plugins { id(&#34;com.avito.android.buildchecks&#34;) } In the settings.gradle:
+pluginManagement { repositories { maven { name = &#34;Avito bintray&#34; url = &#34;https://dl.bintray.com/avito/maven&#34; } } resolutionStrategy { eachPlugin { String pluginId = requested.id.id if (pluginId.startsWith(&#34;com.avito.android&#34;)) { def artifact = pluginId.replace(&#34;com.avito.android.&#34;, &#34;&#34;) useModule(&#34;com.avito.android:$artifact:$avitoToolsVersion&#34;) } } } } avitoToolsVersion could be exact version, or property in project&rsquo;s gradle."><meta property="og:type" content="article"><meta property="og:url" content="https://avito-tech.github.io/avito-android/docs/projects/buildchecks/"><title>Build checks Gradle plugin | Avito Android</title><link rel=icon href=/avito-android/favicon.png type=image/x-icon><link rel=stylesheet href=/avito-android/book.min.63eb88daa545365405ecdbb21033286a325c60a36cfa6d22d21e7c3bc9286941.css integrity="sha256-Y+uI2qVFNlQF7NuyEDMoajJcYKNs+m0i0h58O8koaUE="><script defer src=/avito-android/en.search.min.d9e337e5dc38abc662c5cf809700f6780dbb7534e363f2dcc54816fe59bb388f.js integrity="sha256-2eM35dw4q8Zixc+AlwD2eA27dTTjY/LcxUgW/lm7OI8="></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-157613383-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></head><body><input type=checkbox class=hidden id=menu-control><main class="container flex"><aside class=book-menu><nav><h2 class=book-brand><a href=/avito-android><span>Avito Android</span></a></h2><div class=book-search><input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/><div class="book-search-spinner spinner hidden"></div><ul id=book-search-results></ul></div><ul><li><a href=https://avito-tech.github.io/avito-android/>Introduction</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/tech_radar/techradar/>Tech radar</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/knownissues/>Known Issues</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contacts/>Contacts</a></li><li>Projects<ul><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildchecks/>Build checks</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildproperties/>Build properties</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildtrace/>Build trace</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/cisteps/>CI Steps</a></li></ul></li><li>Contributing<ul><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/howtostart/>How to start</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/docs/>Documentation</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/codereview/>Code Review</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/codestyle/>Code Style</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/featuretoggles/>Feature Toggles</a></li></ul></li><li>IDE<ul><li><a href=https://avito-tech.github.io/avito-android/docs/ide/configurations/>Конфигурации</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/templates/>Шаблоны</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/speedup/>Speedup</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/benchmarking/>Бенчмарки</a></li></ul></li><li>Builds<ul><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/buildtypes/>Типы сборки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/dependencies/>Зависимости</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/minimization/>Минимизация</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/benchmarks/>Бенчмарки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/profiling/>Профилирование</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/buildmetrics/>Метрики</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/mirakle/>Mirakle</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/troubleshooting/>Troubleshooting</a></li></ul></li><li>Architecture<ul><li><a href=https://avito-tech.github.io/avito-android/docs/architecture/dagger/>Dagger</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/architecture/modules/>Modules</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/analytics/analytics/>Аналитика</a><ul><li><a href=https://avito-tech.github.io/avito-android/docs/analytics/statsd/>Statsd</a></li></ul></li><li>Testing<ul><li><a href=https://avito-tech.github.io/avito-android/docs/test/run/>Запуск тестов</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/runner/>Test Runner</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/manual/>Ручное</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testmanagementsystem/>Test Management System</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testcaseincode/>Test case in code</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/unittesting/>Юнит тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/screenshottesting/>Скриншотные тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testminimized/>Test minimized</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/reportviewer/>Report Viewer</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/troubleshootingui/>Troubleshooting</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/workmanager/>Work Manager Testing</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/flakyannotation/>Flaky annotation</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/flakytests/>Нестабильные тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/toast/>Toast</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/snackbar/>Snackbar</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/screenchecks/>Screen checks</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/testframework/>Test framework</a><ul><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/mocking/>Mocking</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/internals/>Internals</a></li></ul></li><li><a href=http://links.k.avito.ru/ff>Design System</a></li><li>Performance<ul><li><a href=https://avito-tech.github.io/avito-android/docs/performance/analytics/>Аналитика</a></li></ul></li><li>Checks<ul><li><a href=https://avito-tech.github.io/avito-android/docs/checks/androidlint/>Android lint</a></li></ul></li><li>CI<ul><li><a href=https://avito-tech.github.io/avito-android/docs/ci/civalues/>Требования</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/cisteps/>CI Gradle Plugin</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/customgradleplugins/>Custom Gradle Plugins</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/impactanalysis/>Impact analysis</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/containers/>Containers</a></li></ul></li><li>CD<ul><li><a href=https://avito-tech.github.io/avito-android/docs/cd/release/>Релиз</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/cd/artifacts/>Артефакты сборки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/cd/qapps/>QApps</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/release/>Infra Release</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/infrastructure/>Infrastructure (Github project)</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/externallibrarychangeprocess/>Внешние библиотеки</a></li></ul><ul><li><a href=/avito-android/posts/>Blog</a></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/avito-android/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Build checks Gradle plugin</strong>
+<label for=toc-control><img src=/avito-android/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><input type=checkbox class=hidden id=toc-control><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#getting-started>Getting started</a></li><li><a href=#configuration>Configuration</a><ul><li><a href=#disable-single-check>Disable single check</a></li><li><a href=#disable-all-checks>Disable all checks</a></li><li><a href=#enable-single-check>Enable single check</a></li></ul></li><li><a href=#checks>Checks</a><ul><li><a href=#java-version>Java version</a></li><li><a href=#android-sdk-version>Android SDK version</a></li><li><a href=#macos-localhost-lookup>macOS localhost lookup</a></li><li><a href=#dynamic-dependency-version>Dynamic dependency version</a></li><li><a href=#unique-r-classes>Unique R classes</a></li><li><a href=#gradle-daemon-reusage>Gradle daemon reusage</a></li><li><a href=#module-types>Module types</a></li><li><a href=#gradle-properties>Gradle properties</a></li><li><a href=#incremental-kapt>Incremental KAPT</a><ul><li><a href=#room>Room</a></li></ul></li></ul></li></ul></nav></aside></header><article class=markdown><h1 id=build-checks-gradle-plugin>Build checks Gradle plugin</h1><p>This plugin verifies <a href=#checks>common build problems</a> with environment and project configuration.</p><h2 id=getting-started>Getting started</h2><p>Apply the plugin in the root build script:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>plugins <span style=color:#f92672>{</span>
+    id<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;com.avito.android.buildchecks&#34;</span><span style=color:#f92672>)</span>
+<span style=color:#f92672>}</span>
+</code></pre></div><p>In the <code>settings.gradle</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>pluginManagement <span style=color:#f92672>{</span>
+    repositories <span style=color:#f92672>{</span>
+        maven <span style=color:#f92672>{</span>
+            name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Avito bintray&#34;</span>
+            url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;https://dl.bintray.com/avito/maven&#34;</span>
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>
+    resolutionStrategy <span style=color:#f92672>{</span>
+        eachPlugin <span style=color:#f92672>{</span>
+            String pluginId <span style=color:#f92672>=</span> requested<span style=color:#f92672>.</span><span style=color:#a6e22e>id</span><span style=color:#f92672>.</span><span style=color:#a6e22e>id</span>
+            <span style=color:#66d9ef>if</span> <span style=color:#f92672>(</span>pluginId<span style=color:#f92672>.</span><span style=color:#a6e22e>startsWith</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;com.avito.android&#34;</span><span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+                <span style=color:#66d9ef>def</span> artifact <span style=color:#f92672>=</span> pluginId<span style=color:#f92672>.</span><span style=color:#a6e22e>replace</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;com.avito.android.&#34;</span><span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;&#34;</span><span style=color:#f92672>)</span>
+                useModule<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;com.avito.android:$artifact:$avitoToolsVersion&#34;</span><span style=color:#f92672>)</span>
+            <span style=color:#f92672>}</span>
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div><p><code>avitoToolsVersion</code> could be exact version, or property in project&rsquo;s <code>gradle.properties</code>.<br>The latest version could be found on project&rsquo;s <a href=https://github.com/avito-tech/avito-android/releases>release page</a>.</p><p>Some checks will require settings to work properly.
+You&rsquo;ll get an error about missing settings:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>&gt; ./gradlew
+
+A problem occurred configuring root project
+&gt; buildChecks.androidSdk.compileSdkVersion must be set
+</code></pre></div><p>After adding missing properties you will get something like this:</p><div class=book-tabs><input type=radio class=hidden name="tabs-build checks example" id="tabs-build checks example-0" checked>
+<label for="tabs-build checks example-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    androidSdk {
+        compileSdkVersion = <span style=color:#ae81ff>29</span>
+        revision = <span style=color:#ae81ff>4</span>
+    }
+    javaVersion {
+        version = JavaVersion.VERSION_1_8
+    }
+    uniqueRClasses {
+        enabled = <span style=color:#66d9ef>false</span>
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-build checks example" id="tabs-build checks example-1">
+<label for="tabs-build checks example-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    androidSdk <span style=color:#f92672>{</span>
+        compileSdkVersion <span style=color:#f92672>=</span> <span style=color:#ae81ff>29</span>
+        revision <span style=color:#f92672>=</span> <span style=color:#ae81ff>4</span>
+    <span style=color:#f92672>}</span>
+    javaVersion <span style=color:#f92672>{</span>
+        version <span style=color:#f92672>=</span> JavaVersion<span style=color:#f92672>.</span><span style=color:#a6e22e>VERSION_1_8</span>
+    <span style=color:#f92672>}</span>
+    uniqueRClasses <span style=color:#f92672>{</span>
+        enabled <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><p>That&rsquo;s all for a configuration. Run it manually to verify that it works:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>&gt; ./gradlew checkBuildEnvironment
+</code></pre></div><p>The plugin will run it automatically on every build.</p><h2 id=configuration>Configuration</h2><h3 id=disable-single-check>Disable single check</h3><div class=book-tabs><input type=radio class=hidden name="tabs-Disable single check" id="tabs-Disable single check-0" checked>
+<label for="tabs-Disable single check-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    androidSdk {
+        enabled = <span style=color:#66d9ef>false</span>
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Disable single check" id="tabs-Disable single check-1">
+<label for="tabs-Disable single check-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    androidSdk <span style=color:#f92672>{</span>
+        enabled <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=disable-all-checks>Disable all checks</h3><div class=book-tabs><input type=radio class=hidden name="tabs-Disable all checks" id="tabs-Disable all checks-0" checked>
+<label for="tabs-Disable all checks-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    enableByDefault = <span style=color:#66d9ef>false</span>
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Disable all checks" id="tabs-Disable all checks-1">
+<label for="tabs-Disable all checks-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    enableByDefault <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=enable-single-check>Enable single check</h3><div class=book-tabs><input type=radio class=hidden name="tabs-Enable single check" id="tabs-Enable single check-0" checked>
+<label for="tabs-Enable single check-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    enableByDefault = <span style=color:#66d9ef>false</span>
+
+    androidSdk {
+        compileSdkVersion = <span style=color:#ae81ff>29</span>
+        revision = <span style=color:#ae81ff>4</span>
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Enable single check" id="tabs-Enable single check-1">
+<label for="tabs-Enable single check-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    enableByDefault <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>
+
+    androidSdk <span style=color:#f92672>{</span>
+        compileSdkVersion <span style=color:#f92672>=</span> <span style=color:#ae81ff>29</span>
+        revision <span style=color:#f92672>=</span> <span style=color:#ae81ff>4</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h2 id=checks>Checks</h2><h3 id=java-version>Java version</h3><p>The Java version can influence the output of the Java compiler.
+It leads to Gradle <a href=https://guides.gradle.org/using-build-cache/#diagnosing_cache_miss>remote cache misses</a>.<br>This check forces the same version for all builds.</p><div class=book-tabs><input type=radio class=hidden name="tabs-Java version" id="tabs-Java version-0" checked>
+<label for="tabs-Java version-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    javaVersion {
+        version = JavaVersion.VERSION_1_8
+    }   
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Java version" id="tabs-Java version-1">
+<label for="tabs-Java version-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    javaVersion <span style=color:#f92672>{</span>
+        version <span style=color:#f92672>=</span> JavaVersion<span style=color:#f92672>.</span><span style=color:#a6e22e>VERSION_1_8</span>
+    <span style=color:#f92672>}</span>   
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=android-sdk-version>Android SDK version</h3><p>Android build tools uses android.jar (<code>$ANDROID_HOME/platforms/android-&lt;compileSdkVersion>/android.jar</code>).<br>The version can be specified only without a revision (<a href=https://issuetracker.google.com/issues/117789774>#117789774</a>).
+Different revisions lead to Gradle remote cache misses. This check forces the same revision:</p><div class=book-tabs><input type=radio class=hidden name="tabs-Android SDK version" id="tabs-Android SDK version-0" checked>
+<label for="tabs-Android SDK version-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    androidSdk {
+        compileSdkVersion = <span style=color:#ae81ff>29</span>
+        revision = <span style=color:#ae81ff>4</span>
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Android SDK version" id="tabs-Android SDK version-1">
+<label for="tabs-Android SDK version-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    androidSdk <span style=color:#f92672>{</span>
+        compileSdkVersion <span style=color:#f92672>=</span> <span style=color:#ae81ff>29</span>
+        revision <span style=color:#f92672>=</span> <span style=color:#ae81ff>4</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=macos-localhost-lookup>macOS localhost lookup</h3><p>On macOs <code>java.net.InetAddress#getLocalHost()</code> invocation can last up to 5 seconds instead of milliseconds
+(<a href=https://thoeni.io/post/macos-sierra-java/>thoeni.io/post/macos-sierra-java</a>).
+Gradle has a <a href=https://github.com/gradle/gradle/pull/11134>workaround</a> but it works only inside Gradle&rsquo;s code.</p><p>To diagnose the problem manually use <a href=https://github.com/thoeni/inetTester>thoeni/inetTester</a>.</p><p>To fix the problem use this workaround:</p><ol><li>Find your computer&rsquo;s name - <a href=https://support.apple.com/en-us/guide/mac-help/find-your-computers-name-and-network-address-mchlp1177/mac>Find your computer&rsquo;s name and network address</a></li><li>Add it to <code>/etc/hosts</code> config:</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>127.0.0.1        localhost &lt;your_host_name&gt;.local
+::1              localhost &lt;your_host_name&gt;.local
+</code></pre></div><ol start=3><li>Reboot the computer</li><li>Check again by <a href=https://github.com/thoeni/inetTester>thoeni/inetTester</a></li></ol><p>This check automatically detects the issue:</p><div class=book-tabs><input type=radio class=hidden name=tabs-macOS id=tabs-macOS-0 checked>
+<label for=tabs-macOS-0>Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    macOSLocalhost { }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-macOS id=tabs-macOS-1>
+<label for=tabs-macOS-1>Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    macOSLocalhost <span style=color:#f92672>{</span> <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=dynamic-dependency-version>Dynamic dependency version</h3><p>Dynamic versions, such as &ldquo;2.+&rdquo;, and snapshot versions force Gradle to check them on a remote server.
+It slows down a <a href=https://guides.gradle.org/performance/#minimize_dynamic_and_snapshot_versions>configuration time</a>
+and makes build <a href=https://reproducible-builds.org/>less reproducible</a>.</p><p>This check forbids dynamic dependency versions.</p><div class=book-tabs><input type=radio class=hidden name="tabs-Dynamic dependency version" id="tabs-Dynamic dependency version-0" checked>
+<label for="tabs-Dynamic dependency version-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    dynamicDependencies { }
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Dynamic dependency version" id="tabs-Dynamic dependency version-1">
+<label for="tabs-Dynamic dependency version-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    dynamicDependencies <span style=color:#f92672>{</span> <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=unique-r-classes>Unique R classes</h3><p>If two Android modules use the same package, their R classes will be merged.
+While merging, it can unexpectedly override resources. It happens even with <code>android.namespacedRClass</code>.</p><p>To forbid merged R files use this check:</p><div class=book-tabs><input type=radio class=hidden name="tabs-Unique R classes" id="tabs-Unique R classes-0" checked>
+<label for="tabs-Unique R classes-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>plugins {
+    id(<span style=color:#e6db74>&#34;com.avito.android.buildchecks&#34;</span>)
+    id(<span style=color:#e6db74>&#34;com.avito.android.impact&#34;</span>) <span style=color:#75715e>// this check requires impact analysis
+</span><span style=color:#75715e></span>}
+
+buildChecks {
+    uniqueRClasses { } <span style=color:#75715e>// enabled by default
+</span><span style=color:#75715e></span>}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Unique R classes" id="tabs-Unique R classes-1">
+<label for="tabs-Unique R classes-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>plugins <span style=color:#f92672>{</span>
+    id<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;com.avito.android.buildchecks&#34;</span><span style=color:#f92672>)</span>
+    id<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;com.avito.android.impact&#34;</span><span style=color:#f92672>)</span> <span style=color:#75715e>// this check requires impact analysis
+</span><span style=color:#75715e></span><span style=color:#f92672>}</span>
+
+buildChecks <span style=color:#f92672>{</span>
+    uniqueRClasses <span style=color:#f92672>{</span> <span style=color:#f92672>}</span> <span style=color:#75715e>// enabled by default
+</span><span style=color:#75715e></span><span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=gradle-daemon-reusage>Gradle daemon reusage</h3><p>Gradle can run multiple daemons for <a href=https://docs.gradle.org/5.0/userguide/gradle_daemon.html#sec:why_is_there_more_than_one_daemon_process_on_my_machine>many reasons</a>.</p><p>If you use <code>buildSrc</code> in the project with standalone Gradle wrapper, this check will verify common problems to reuse it.</p><div class=book-tabs><input type=radio class=hidden name="tabs-Gradle daemon reusage" id="tabs-Gradle daemon reusage-0" checked>
+<label for="tabs-Gradle daemon reusage-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    gradleDaemon { }
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Gradle daemon reusage" id="tabs-Gradle daemon reusage-1">
+<label for="tabs-Gradle daemon reusage-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    gradleDaemon <span style=color:#f92672>{</span> <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=module-types>Module types</h3><p>This check force to apply <a href=https://github.com/avito-tech/avito-android/blob/develop/subprojects/gradle/module-types><code>module-types</code></a> Gradle plugin in all modules.
+It prevents modules go to wrong configurations (android-test module as an app’s implementation dependency for example).</p><div class=book-tabs><input type=radio class=hidden name="tabs-Module types" id="tabs-Module types-0" checked>
+<label for="tabs-Module types-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    moduleTypes { 
+        enabled = <span style=color:#66d9ef>true</span> <span style=color:#75715e>// disabled by default
+</span><span style=color:#75715e></span>    } 
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Module types" id="tabs-Module types-1">
+<label for="tabs-Module types-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    moduleTypes <span style=color:#f92672>{</span> 
+        enabled <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span> <span style=color:#75715e>// disabled by default
+</span><span style=color:#75715e></span>    <span style=color:#f92672>}</span> 
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=gradle-properties>Gradle properties</h3><blockquote class="book-hint info">This check contains Avito specific details</blockquote><p>This check detects if you override <a href=https://docs.gradle.org/current/userguide/build_environment.html#sec:project_properties>Gradle project property</a> by command-line.
+It sends mismatches to <a href=https://avito-tech.github.io/avito-android/docs/analytics/statsd/>statsd</a>.
+This information helps to see frequently changed propeties that can lead to remote cache misses.</p><div class=book-tabs><input type=radio class=hidden name="tabs-Gradle properties" id="tabs-Gradle properties-0" checked>
+<label for="tabs-Gradle properties-0">Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    gradleProperties { 
+        enabled = <span style=color:#66d9ef>true</span> <span style=color:#75715e>// disabled by default
+</span><span style=color:#75715e></span>    } 
+}
+</code></pre></div></div><input type=radio class=hidden name="tabs-Gradle properties" id="tabs-Gradle properties-1">
+<label for="tabs-Gradle properties-1">Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    gradleProperties <span style=color:#f92672>{</span> 
+        enabled <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span> <span style=color:#75715e>// disabled by default
+</span><span style=color:#75715e></span>    <span style=color:#f92672>}</span> 
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=incremental-kapt>Incremental KAPT</h3><p>This check verifies that all KAPT annotation processors support incremental annotation processing
+if it is <a href=https://kotlinlang.org/docs/reference/kapt.html#incremental-annotation-processing-since-1330>enabled</a> (<code>kapt.incremental.apt=true</code>).
+Because if one of them does not support it then whole incremental annotation processing won&rsquo;t work at all.</p><p>Supported processors:</p><ul><li><a href=https://developer.android.com/topic/libraries/architecture/room>Room</a></li></ul><p>Incremental KAPT check has three modes:</p><ul><li><code>"none"</code> &ndash; check is disable</li><li><code>"warning"</code> &ndash; prints warning in build log (default behaviour)</li><li><code>"fail"</code> &ndash; fail whole build</li></ul><div class=book-tabs><input type=radio class=hidden name=tabs- id=tabs--0 checked>
+<label for=tabs--0>Kotlin</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>buildChecks {
+    incrementalKapt {
+        mode = <span style=color:#e6db74>&#34;fail&#34;</span>
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs- id=tabs--1>
+<label for=tabs--1>Groovy</label><div class="book-tabs-content markdown-inner"><p><code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>buildChecks <span style=color:#f92672>{</span>
+    incrementalKapt <span style=color:#f92672>{</span>
+        mode <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;fail&#34;</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h4 id=room>Room</h4><p>Room supports incremental annotation processing if all of the following conditions are met:</p><ul><li><a href=https://developer.android.com/jetpack/androidx/releases/room#compiler-options><code>room.incremental</code></a> it set to <code>true</code>
+or <code>com.avito.android.room-config</code> Gradle-plugin is applied</li><li>You use Java 11 and higher or use JDK embedded in Android Studio 3.5.0-beta02 and higher.
+For more info about these restrictions read the documentation for the method <code>methodParametersVisibleInClassFiles</code>
+in <code>RoomProcessor</code> <a href=https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-master-dev/room/compiler/src/main/kotlin/androidx/room/RoomProcessor.kt>sources</a></li></ul><p>If you use IntelliJ IDEA or build a project from the command line you have to set up <code>JAVA_HOME</code> environment variable to
+reference the path to embedded JDK in Android Studio. You can add to <code>~/.gradle/gradle.properties</code> line like this:</p><pre><code class=language-properties data-lang=properties>org.gradle.java.home=/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home
+</code></pre><p>This path can be retrieved from <strong>Project Structure > SDK Location > JDK location</strong> in
+Android Studio.</p></article><footer class=book-footer><div class="flex justify-between"><div class=book-languages tabindex=0 aria-haspopup=true><ul><li class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+English</li></ul><ul class=book-languages-list><li class=active><a href=/avito-android/ class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+English</a></li><li><a href=/avito-android/ru/ class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+Русский</a></li></ul></div><div><a class="flex align-center" href=https://github.com/avito-tech/avito-android/tree/develop/docs/content/docs/projects/BuildChecks.md target=_blank rel=noopener><img src=/avito-android/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div><div><a class="flex justify-end" href=/avito-android/docs/contacts><span>Contact us</span></a></div></div></footer><div class=book-comments></div><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#getting-started>Getting started</a></li><li><a href=#configuration>Configuration</a><ul><li><a href=#disable-single-check>Disable single check</a></li><li><a href=#disable-all-checks>Disable all checks</a></li><li><a href=#enable-single-check>Enable single check</a></li></ul></li><li><a href=#checks>Checks</a><ul><li><a href=#java-version>Java version</a></li><li><a href=#android-sdk-version>Android SDK version</a></li><li><a href=#macos-localhost-lookup>macOS localhost lookup</a></li><li><a href=#dynamic-dependency-version>Dynamic dependency version</a></li><li><a href=#unique-r-classes>Unique R classes</a></li><li><a href=#gradle-daemon-reusage>Gradle daemon reusage</a></li><li><a href=#module-types>Module types</a></li><li><a href=#gradle-properties>Gradle properties</a></li><li><a href=#incremental-kapt>Incremental KAPT</a><ul><li><a href=#room>Room</a></li></ul></li></ul></li></ul></nav></aside></main></body></html>

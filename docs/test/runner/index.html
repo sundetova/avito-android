@@ -1,0 +1,461 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Avito test runner This is the Gradle plugin to run Android instrumentation tests.
+It can do the following:
+ Filter tests by annotations, by packages, by previous runs. Run tests in parallel. It orchestrates emulators in Kubernetes or uses local emulators. Rerun failed tests to deal with flakiness Save tests result in a report.
+It uses an internal TMS (test management system). We are working on support other formats.  Getting started  Apply the instrumentation-tests Gradle plugin \  Kotlin Add to your build."><meta property="og:title" content="Test Runner"><meta property="og:description" content="Avito test runner This is the Gradle plugin to run Android instrumentation tests.
+It can do the following:
+ Filter tests by annotations, by packages, by previous runs. Run tests in parallel. It orchestrates emulators in Kubernetes or uses local emulators. Rerun failed tests to deal with flakiness Save tests result in a report.
+It uses an internal TMS (test management system). We are working on support other formats.  Getting started  Apply the instrumentation-tests Gradle plugin \  Kotlin Add to your build."><meta property="og:type" content="article"><meta property="og:url" content="https://avito-tech.github.io/avito-android/docs/test/runner/"><title>Test Runner | Avito Android</title><link rel=icon href=/avito-android/favicon.png type=image/x-icon><link rel=stylesheet href=/avito-android/book.min.63eb88daa545365405ecdbb21033286a325c60a36cfa6d22d21e7c3bc9286941.css integrity="sha256-Y+uI2qVFNlQF7NuyEDMoajJcYKNs+m0i0h58O8koaUE="><script defer src=/avito-android/en.search.min.d9e337e5dc38abc662c5cf809700f6780dbb7534e363f2dcc54816fe59bb388f.js integrity="sha256-2eM35dw4q8Zixc+AlwD2eA27dTTjY/LcxUgW/lm7OI8="></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-157613383-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></head><body><input type=checkbox class=hidden id=menu-control><main class="container flex"><aside class=book-menu><nav><h2 class=book-brand><a href=/avito-android><span>Avito Android</span></a></h2><div class=book-search><input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/><div class="book-search-spinner spinner hidden"></div><ul id=book-search-results></ul></div><ul><li><a href=https://avito-tech.github.io/avito-android/>Introduction</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/tech_radar/techradar/>Tech radar</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/knownissues/>Known Issues</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contacts/>Contacts</a></li><li>Projects<ul><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildchecks/>Build checks</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildproperties/>Build properties</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildtrace/>Build trace</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/cisteps/>CI Steps</a></li></ul></li><li>Contributing<ul><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/howtostart/>How to start</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/docs/>Documentation</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/codereview/>Code Review</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/codestyle/>Code Style</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/featuretoggles/>Feature Toggles</a></li></ul></li><li>IDE<ul><li><a href=https://avito-tech.github.io/avito-android/docs/ide/configurations/>Конфигурации</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/templates/>Шаблоны</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/speedup/>Speedup</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/benchmarking/>Бенчмарки</a></li></ul></li><li>Builds<ul><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/buildtypes/>Типы сборки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/dependencies/>Зависимости</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/minimization/>Минимизация</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/benchmarks/>Бенчмарки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/profiling/>Профилирование</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/buildmetrics/>Метрики</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/mirakle/>Mirakle</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/troubleshooting/>Troubleshooting</a></li></ul></li><li>Architecture<ul><li><a href=https://avito-tech.github.io/avito-android/docs/architecture/dagger/>Dagger</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/architecture/modules/>Modules</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/analytics/analytics/>Аналитика</a><ul><li><a href=https://avito-tech.github.io/avito-android/docs/analytics/statsd/>Statsd</a></li></ul></li><li>Testing<ul><li><a href=https://avito-tech.github.io/avito-android/docs/test/run/>Запуск тестов</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/runner/>Test Runner</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/manual/>Ручное</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testmanagementsystem/>Test Management System</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testcaseincode/>Test case in code</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/unittesting/>Юнит тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/screenshottesting/>Скриншотные тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testminimized/>Test minimized</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/reportviewer/>Report Viewer</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/troubleshootingui/>Troubleshooting</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/workmanager/>Work Manager Testing</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/flakyannotation/>Flaky annotation</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/flakytests/>Нестабильные тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/toast/>Toast</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/snackbar/>Snackbar</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/screenchecks/>Screen checks</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/testframework/>Test framework</a><ul><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/mocking/>Mocking</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/internals/>Internals</a></li></ul></li><li><a href=http://links.k.avito.ru/ff>Design System</a></li><li>Performance<ul><li><a href=https://avito-tech.github.io/avito-android/docs/performance/analytics/>Аналитика</a></li></ul></li><li>Checks<ul><li><a href=https://avito-tech.github.io/avito-android/docs/checks/androidlint/>Android lint</a></li></ul></li><li>CI<ul><li><a href=https://avito-tech.github.io/avito-android/docs/ci/civalues/>Требования</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/cisteps/>CI Gradle Plugin</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/customgradleplugins/>Custom Gradle Plugins</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/impactanalysis/>Impact analysis</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/containers/>Containers</a></li></ul></li><li>CD<ul><li><a href=https://avito-tech.github.io/avito-android/docs/cd/release/>Релиз</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/cd/artifacts/>Артефакты сборки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/cd/qapps/>QApps</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/release/>Infra Release</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/infrastructure/>Infrastructure (Github project)</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/externallibrarychangeprocess/>Внешние библиотеки</a></li></ul><ul><li><a href=/avito-android/posts/>Blog</a></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/avito-android/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Test Runner</strong>
+<label for=toc-control><img src=/avito-android/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><input type=checkbox class=hidden id=toc-control><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#getting-started>Getting started</a></li><li><a href=#examples>Examples</a></li><li><a href=#filtering-tests-for-execution>Filtering tests for execution</a><ul><li><a href=#filter-tests-by-annotations>Filter tests by annotations</a></li><li><a href=#filter-flaky-tests>Filter flaky tests</a></li><li><a href=#filter-tests-by-prefix-or-name>Filter tests by prefix or name</a></li><li><a href=#filter-tests-by-statuses-from-previous-run-on-the-same-commit>Filter tests by statuses from previous run on the same commit</a></li><li><a href=#filter-tests-by-statuses-from-report-by-id>Filter tests by statuses from report by id</a></li><li><a href=#apply-a-filter-without-changing-buildgradlekts-or-buildgradle>Apply a filter without changing <code>build.gradle.kts</code> or <code>build.gradle</code></a></li><li><a href=#customize-a-filter-without-changing-buildgradlekts-or-buildgradle>Customize a filter without changing <code>build.gradle.kts</code> or <code>build.gradle</code></a></li></ul></li><li><a href=#find-out-how-filters-were-applied>Find out how filters were applied</a><ul><li><a href=#find-out-what-filter-config-was>Find out what filter config was</a></li><li><a href=#find-out-what-filters-applied>Find out what filters applied</a></li><li><a href=#find-out-what-tests-were-filtered>Find out what tests were filtered</a></li></ul></li><li><a href=#choosing-target-for-tests-execution>Choosing target for tests execution</a><ul><li><a href=#run-tests-on-kubernetes-target-from-a-local-machine>Run tests on kubernetes target from a local machine</a></li><li><a href=#run-tests-on-local-emulator-target>Run tests on local emulator target</a></li></ul></li><li><a href=#run-test-on-apk-was-built-before>Run test on APK was built before</a></li><li><a href=#run-tests-on-google-cloud-platform>Run tests on Google Cloud Platform</a></li></ul></nav></aside></header><article class=markdown><h1 id=avito-test-runner>Avito test runner</h1><p>This is the Gradle plugin to run Android instrumentation tests.</p><p>It can do the following:</p><ul><li>Filter tests by annotations, by packages, by previous runs.</li><li>Run tests in parallel. It orchestrates emulators in Kubernetes or uses local emulators.</li><li>Rerun failed tests to deal with flakiness</li><li>Save tests result in a report.<br>It uses an internal TMS (test management system). We are working on support other formats.</li></ul><h2 id=getting-started>Getting started</h2><ol><li>Apply the instrumentation-tests Gradle plugin \</li></ol><div class=book-tabs><input type=radio class=hidden name=tabs-applyPlugin id=tabs-applyPlugin-0 checked>
+<label for=tabs-applyPlugin-0>Kotlin</label><div class="book-tabs-content markdown-inner"><p>Add to your <code>build.gradle.kts</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>plugins {
+    id(<span style=color:#e6db74>&#34;com.android.application&#34;</span>)
+    id(<span style=color:#e6db74>&#34;com.avito.android.instrumentation-tests&#34;</span>)
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-applyPlugin id=tabs-applyPlugin-1>
+<label for=tabs-applyPlugin-1>Groovy</label><div class="book-tabs-content markdown-inner"><p>Add to your <code>build.gradle</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>plugins <span style=color:#f92672>{</span>
+    id<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;com.android.application&#34;</span><span style=color:#f92672>)</span>
+    id<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;com.avito.android.instrumentation-tests&#34;</span><span style=color:#f92672>)</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><ol start=2><li><p>Add common plugin configuration<div class=book-tabs><input type=radio class=hidden name=tabs-pluginConfiguration id=tabs-pluginConfiguration-0 checked>
+<label for=tabs-pluginConfiguration-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>import</span> com.avito.instrumentation.reservation.request.Device.LocalEmulator
+
+extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    <span style=color:#75715e>// they are required for Avito app. We will make them optional in future.
+</span><span style=color:#75715e></span>    reportApiUrl = <span style=color:#e6db74>&#34;http://stub&#34;</span>
+    reportApiFallbackUrl = <span style=color:#e6db74>&#34;http://stub&#34;</span>
+    reportViewerUrl = <span style=color:#e6db74>&#34;http://stub&#34;</span>
+    registry = <span style=color:#e6db74>&#34;registry&#34;</span>
+    sentryDsn = <span style=color:#e6db74>&#34;http://stub-project@stub-host/0&#34;</span>
+    slackToken = <span style=color:#e6db74>&#34;stub&#34;</span>
+    fileStorageUrl = <span style=color:#e6db74>&#34;http://stub&#34;</span>
+
+    configurationsContainer.register(<span style=color:#e6db74>&#34;local&#34;</span>) {
+
+        targetsContainer.register(<span style=color:#e6db74>&#34;api28&#34;</span>) {
+            deviceName = <span style=color:#e6db74>&#34;API28&#34;</span>
+
+            scheduling = SchedulingConfiguration().apply {
+                quota = QuotaConfiguration().apply {
+                    retryCount = <span style=color:#ae81ff>1</span>
+                    minimumSuccessCount = <span style=color:#ae81ff>1</span>
+                }
+
+                reservation = TestsBasedDevicesReservationConfiguration().apply {
+                    device = LocalEmulator.device(<span style=color:#ae81ff>28</span>, <span style=color:#e6db74>&#34;Android_SDK_built_for_x86_64&#34;</span>)
+                    maximum = <span style=color:#ae81ff>1</span>
+                    minimum = <span style=color:#ae81ff>1</span>
+                    testsPerEmulator = <span style=color:#ae81ff>1</span>
+                }
+            }
+        }
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-pluginConfiguration id=tabs-pluginConfiguration-1>
+<label for=tabs-pluginConfiguration-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#f92672>import</span> com.avito.instrumentation.reservation.request.Device.LocalEmulator
+
+instrumentation <span style=color:#f92672>{</span>
+    <span style=color:#75715e>// they are required for Avito app. We will make them optional in future.
+</span><span style=color:#75715e></span>    reportApiUrl <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://stub&#34;</span>
+    reportApiFallbackUrl <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://stub&#34;</span>
+    reportViewerUrl <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://stub&#34;</span>
+    registry <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;registry&#34;</span>
+    sentryDsn <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://stub-project@stub-host/0&#34;</span>
+    slackToken <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;stub&#34;</span>
+    fileStorageUrl <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://stub&#34;</span>
+    
+    configurations <span style=color:#f92672>{</span>
+        local <span style=color:#f92672>{</span>
+            targets <span style=color:#f92672>{</span>
+                api28 <span style=color:#f92672>{</span>
+                    deviceName <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;API28&#34;</span>
+                    scheduling <span style=color:#f92672>{</span>
+                        quota <span style=color:#f92672>{</span>
+                            retryCount <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                            minimumSuccessCount <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                        <span style=color:#f92672>}</span>
+
+                        testsCountBasedReservation <span style=color:#f92672>{</span>
+                            device <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> LocalEmulator<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;28&#34;</span><span style=color:#f92672>,</span> <span style=color:#ae81ff>28</span><span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;Android_SDK_built_for_x86_64&#34;</span><span style=color:#f92672>)</span>
+                            maximum <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                            testsPerEmulator <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                        <span style=color:#f92672>}</span>
+                    <span style=color:#f92672>}</span>
+                <span style=color:#f92672>}</span>   
+            <span style=color:#f92672>}</span>       
+        <span style=color:#f92672>}</span>   
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div></p></li><li><p>Run tests via Gradle task</p></li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>    ./gradlew :&lt;projectPath&gt;:instrumentation&lt;ConfigurationName&gt;         
+</code></pre></div><p>In our case:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>    ./gradlew :&lt;projectPath&gt;:instrumentationLocal 
+</code></pre></div><h2 id=examples>Examples</h2><p>Check out a configuration to run in <code>GradleInstrumentationPluginConfiguration</code> in the <a href=https://github.com/avito-tech/avito-android/blob/develop/samples/test-app/build.gradle.kts#L114>test app</a></p><h2 id=filtering-tests-for-execution>Filtering tests for execution</h2><ol start=0><li><a href=#getting-started>You must apply a plugin</a></li><li>Create filter</li></ol><div class=book-tabs><input type=radio class=hidden name=tabs-createFilter id=tabs-createFilter-0 checked>
+<label for=tabs-createFilter-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    filters.register(<span style=color:#e6db74>&#34;filterName&#34;</span>) {
+        fromSource.includeByAnnotations(annotations)
+        fromSource.excludeByAnnotations(annotations)
+        fromSource.includeByPrefixes(prefixes)
+        fromSource.excludeByPrefixes(prefixes)
+        
+        <span style=color:#75715e>// it is internal for Avito. It uses run history from our test-report system.
+</span><span style=color:#75715e></span>        fromRunHistory.excludePreviousStatuses(statuses)
+        fromRunHistory.excludePreviousStatuses(statuses)
+        fromRunHistory.report(<span style=color:#e6db74>&#34;reportId&#34;</span>) { reportStatuses -&gt;
+            reportStatuses.include(statuses)
+            reportStatuses.exclude(statuses)
+        }
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-createFilter id=tabs-createFilter-1>
+<label for=tabs-createFilter-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#f92672>import</span> com.avito.instrumentation.reservation.request.Device.LocalEmulator
+
+instrumentation <span style=color:#f92672>{</span>
+    filters <span style=color:#f92672>{</span>
+        filterName <span style=color:#f92672>{</span>
+            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>includeByAnnotations</span><span style=color:#f92672>(</span>annotations<span style=color:#f92672>)</span>
+            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>excludeByAnnotations</span><span style=color:#f92672>(</span>annotations<span style=color:#f92672>)</span>
+            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>includeByPrefixes</span><span style=color:#f92672>(</span>prefixes<span style=color:#f92672>)</span>
+            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>excludeByPrefixes</span><span style=color:#f92672>(</span>prefixes<span style=color:#f92672>)</span>
+            
+            <span style=color:#75715e>// it is internal for Avito. It uses run history from our test-report system.
+</span><span style=color:#75715e></span>            fromRunHistory<span style=color:#f92672>.</span><span style=color:#a6e22e>excludePreviousStatuses</span><span style=color:#f92672>(</span>statuses<span style=color:#f92672>)</span>
+            fromRunHistory<span style=color:#f92672>.</span><span style=color:#a6e22e>excludePreviousStatuses</span><span style=color:#f92672>(</span>statuses<span style=color:#f92672>)</span>
+            fromRunHistory<span style=color:#f92672>.</span><span style=color:#a6e22e>report</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;reportId&#34;</span><span style=color:#f92672>)</span> <span style=color:#f92672>{</span> reportStatuses <span style=color:#f92672>-&gt;</span>
+                reportStatuses<span style=color:#f92672>.</span><span style=color:#a6e22e>include</span><span style=color:#f92672>(</span>statuses<span style=color:#f92672>)</span>
+                reportStatuses<span style=color:#f92672>.</span><span style=color:#a6e22e>exclude</span><span style=color:#f92672>(</span>statuses<span style=color:#f92672>)</span>
+            <span style=color:#f92672>}</span>
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>   
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><ol start=2><li>Add filter to configuration</li></ol><div class=book-tabs><input type=radio class=hidden name=tabs-addFilterToConfiguration id=tabs-addFilterToConfiguration-0 checked>
+<label for=tabs-addFilterToConfiguration-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    configurationsContainer.register(<span style=color:#e6db74>&#34;local&#34;</span>) {
+        filter = <span style=color:#e6db74>&#34;filterName&#34;</span>
+        <span style=color:#75715e>// else...   
+</span><span style=color:#75715e></span>    }    
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-addFilterToConfiguration id=tabs-addFilterToConfiguration-1>
+<label for=tabs-addFilterToConfiguration-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>instrumentation <span style=color:#f92672>{</span>
+    configurations <span style=color:#f92672>{</span>
+        local <span style=color:#f92672>{</span>
+            filter <span style=color:#f92672>=</span> filterName
+            <span style=color:#75715e>// else...       
+</span><span style=color:#75715e></span>        <span style=color:#f92672>}</span>   
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=filter-tests-by-annotations>Filter tests by annotations</h3><div class=book-tabs><input type=radio class=hidden name=tabs-filterTestsByAnnotations id=tabs-filterTestsByAnnotations-0 checked>
+<label for=tabs-filterTestsByAnnotations-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    filters.register(<span style=color:#e6db74>&#34;filterName&#34;</span>) {
+        <span style=color:#66d9ef>val</span> yourFullyQualifiedAnnotationName = <span style=color:#e6db74>&#34;package.AnnotationClassName&#34;</span>
+        
+        <span style=color:#66d9ef>val</span> annotations = setOf(youFullyQualifiedAnnotationName)
+        <span style=color:#75715e>// will include only tests with at least one annotation
+</span><span style=color:#75715e></span>        fromSource.includeByAnnotations(annotations)
+        <span style=color:#75715e>// will exclude all tests with at least one annotation
+</span><span style=color:#75715e></span>        fromSource.excludeByAnnotations(annotations)
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-filterTestsByAnnotations id=tabs-filterTestsByAnnotations-1>
+<label for=tabs-filterTestsByAnnotations-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>instrumentation <span style=color:#f92672>{</span>
+    filters <span style=color:#f92672>{</span>
+        filterName <span style=color:#f92672>{</span>
+            <span style=color:#66d9ef>def</span> yourFullyQualifiedAnnotationName <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;package.AnnotationClassName&#34;</span>
+                    
+            <span style=color:#66d9ef>def</span> annotations <span style=color:#f92672>=</span> <span style=color:#f92672>[</span>youFullyQualifiedAnnotationName<span style=color:#f92672>]</span> <span style=color:#66d9ef>as</span> Set
+            <span style=color:#75715e>// will include only tests with at least one annotation
+</span><span style=color:#75715e></span>            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>includeByAnnotations</span><span style=color:#f92672>(</span>annotations<span style=color:#f92672>)</span>
+            <span style=color:#75715e>// will exclude all tests with at least one annotation
+</span><span style=color:#75715e></span>            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>excludeByAnnotations</span><span style=color:#f92672>(</span>annotations<span style=color:#f92672>)</span>       
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=filter-flaky-tests>Filter flaky tests</h3><div class=book-tabs><input type=radio class=hidden name=tabs-filterFlakyTests id=tabs-filterFlakyTests-0 checked>
+<label for=tabs-filterFlakyTests-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    filters.register(<span style=color:#e6db74>&#34;filterName&#34;</span>) {
+        fromSource.excludeFlaky = <span style=color:#66d9ef>true</span>
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-filterFlakyTests id=tabs-filterFlakyTests-1>
+<label for=tabs-filterFlakyTests-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>instrumentation <span style=color:#f92672>{</span>
+    filters <span style=color:#f92672>{</span>
+        filterName <span style=color:#f92672>{</span>
+            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>excludeFlaky</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>       
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=filter-tests-by-prefix-or-name>Filter tests by prefix or name</h3><div class=book-tabs><input type=radio class=hidden name=tabs-filterTestsByPrefix id=tabs-filterTestsByPrefix-0 checked>
+<label for=tabs-filterTestsByPrefix-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    filters.register(<span style=color:#e6db74>&#34;filterName&#34;</span>) {
+        <span style=color:#66d9ef>val</span> packageTestFilter = <span style=color:#e6db74>&#34;testPackage&#34;</span>
+        <span style=color:#66d9ef>val</span> classTestFilter = <span style=color:#e6db74>&#34;testPackage.testClass&#34;</span>
+        <span style=color:#66d9ef>val</span> fullyQualifiedTestFilter = <span style=color:#e6db74>&#34;testPackage.testClass.testMetod&#34;</span>
+        <span style=color:#66d9ef>val</span> prefixes = setOf(packageTestFilter, classTestFilter, fullyQualifiedTestFilter)
+        <span style=color:#75715e>// will include only tests from package, class and concrete test
+</span><span style=color:#75715e></span>        fromSource.includeByPrefixes(prefixes)
+        
+        <span style=color:#75715e>// will exclude all tests from package, class and concrete test
+</span><span style=color:#75715e></span>        fromSource.excludeByPrefixes(prefixes)
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-filterTestsByPrefix id=tabs-filterTestsByPrefix-1>
+<label for=tabs-filterTestsByPrefix-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy>instrumentation <span style=color:#f92672>{</span>
+    filters <span style=color:#f92672>{</span>
+        filterName <span style=color:#f92672>{</span>
+            <span style=color:#66d9ef>def</span> packageTestFilter <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;testPackage&#34;</span>
+            <span style=color:#66d9ef>def</span> classTestFilter <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;testPackage.testClass&#34;</span>
+            <span style=color:#66d9ef>def</span> fullyQualifiedTestFilter <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;testPackage.testClass.testMetod&#34;</span>
+            <span style=color:#66d9ef>def</span> prefixes <span style=color:#f92672>=</span> <span style=color:#f92672>[</span>packageTestFilter<span style=color:#f92672>,</span> classTestFilter<span style=color:#f92672>,</span> fullyQualifiedTestFilter<span style=color:#f92672>]</span> <span style=color:#66d9ef>as</span> Set
+            <span style=color:#75715e>// will include only tests from package, class and concrete test
+</span><span style=color:#75715e></span>            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>includeByPrefixes</span><span style=color:#f92672>(</span>prefixes<span style=color:#f92672>)</span>
+            
+            <span style=color:#75715e>// will exclude all tests from package, class and concrete test
+</span><span style=color:#75715e></span>            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>excludeByPrefixes</span><span style=color:#f92672>(</span>prefixes<span style=color:#f92672>)</span>
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>   
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=filter-tests-by-statuses-from-previous-run-on-the-same-commit>Filter tests by statuses from previous run on the same commit</h3><div class=book-tabs><input type=radio class=hidden name=tabs-filterTestsByPreviousRun id=tabs-filterTestsByPreviousRun-0 checked>
+<label for=tabs-filterTestsByPreviousRun-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>import</span> com.avito.instrumentation.configuration.InstrumentationFilter.FromRunHistory.RunStatus
+
+extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    filters.register(<span style=color:#e6db74>&#34;filterName&#34;</span>) {
+        <span style=color:#66d9ef>val</span> statuses = setOf(RunStatus.Success)        
+        <span style=color:#75715e>// will run only Success previously Succeed tests
+</span><span style=color:#75715e></span>        fromRunHistory.includePreviousStatuses(statuses)
+        <span style=color:#75715e>// will run all tests except previously Succeed
+</span><span style=color:#75715e></span>        fromRunHistory.excludePreviousStatuses(statuses)
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-filterTestsByPreviousRun id=tabs-filterTestsByPreviousRun-1>
+<label for=tabs-filterTestsByPreviousRun-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#f92672>import</span> com.avito.instrumentation.configuration.InstrumentationFilter.FromRunHistory.RunStatus
+
+instrumentation <span style=color:#f92672>{</span>
+    filters <span style=color:#f92672>{</span>
+        filterName <span style=color:#f92672>{</span>
+            <span style=color:#66d9ef>def</span> statuses <span style=color:#f92672>=</span> <span style=color:#f92672>[</span>RunStatus<span style=color:#f92672>.</span><span style=color:#a6e22e>Success</span><span style=color:#f92672>]</span> <span style=color:#66d9ef>as</span> Set   
+            <span style=color:#75715e>// will run only Success previously Succeed tests
+</span><span style=color:#75715e></span>            fromRunHistory<span style=color:#f92672>.</span><span style=color:#a6e22e>includePreviousStatuses</span><span style=color:#f92672>(</span>statuses<span style=color:#f92672>)</span>
+            <span style=color:#75715e>// will run all tests except previously Succeed
+</span><span style=color:#75715e></span>            fromRunHistory<span style=color:#f92672>.</span><span style=color:#a6e22e>excludePreviousStatuses</span><span style=color:#f92672>(</span>statuses<span style=color:#f92672>)</span>
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>   
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=filter-tests-by-statuses-from-report-by-id>Filter tests by statuses from report by id</h3><div class=book-tabs><input type=radio class=hidden name=tabs-filterTestsByReport id=tabs-filterTestsByReport-0 checked>
+<label for=tabs-filterTestsByReport-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>import</span> com.avito.instrumentation.configuration.InstrumentationFilter.FromRunHistory.RunStatus
+
+extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    filters.register(<span style=color:#e6db74>&#34;filterName&#34;</span>) {
+        <span style=color:#75715e>// report-viewer report id
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>val</span> reportId = <span style=color:#e6db74>&#34;id&#34;</span>
+        <span style=color:#66d9ef>val</span> statuses = setOf(RunStatus.Failed)
+        
+        fromRunHistory.report(reportId) { reportStatuses -&gt;
+            <span style=color:#75715e>// will run only Failed tests from report 
+</span><span style=color:#75715e></span>            reportStatuses.include(statuses)
+            <span style=color:#75715e>// will run all tests except Failed tests from report
+</span><span style=color:#75715e></span>            reportStatuses.exclude(statuses)
+        }
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-filterTestsByReport id=tabs-filterTestsByReport-1>
+<label for=tabs-filterTestsByReport-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#f92672>import</span> com.avito.instrumentation.configuration.InstrumentationFilter.FromRunHistory.RunStatus
+
+instrumentation <span style=color:#f92672>{</span>
+    filters <span style=color:#f92672>{</span>
+        filterName <span style=color:#f92672>{</span>
+            <span style=color:#75715e>// report-viewer report id
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>def</span> reportId <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;id&#34;</span>
+            <span style=color:#66d9ef>def</span> statuses <span style=color:#f92672>=</span> <span style=color:#f92672>[</span>RunStatus<span style=color:#f92672>.</span><span style=color:#a6e22e>Failed</span><span style=color:#f92672>]</span> <span style=color:#66d9ef>as</span> Set  
+            fromRunHistory<span style=color:#f92672>.</span><span style=color:#a6e22e>report</span><span style=color:#f92672>(</span>reportId<span style=color:#f92672>)</span> <span style=color:#f92672>{</span> reportStatuses <span style=color:#f92672>-&gt;</span>
+                <span style=color:#75715e>// will run only Failed tests from report 
+</span><span style=color:#75715e></span>                reportStatuses<span style=color:#f92672>.</span><span style=color:#a6e22e>include</span><span style=color:#f92672>(</span>statuses<span style=color:#f92672>)</span>
+                <span style=color:#75715e>// will run all tests except Failed tests from report
+</span><span style=color:#75715e></span>                reportStatuses<span style=color:#f92672>.</span><span style=color:#a6e22e>exclude</span><span style=color:#f92672>(</span>statuses<span style=color:#f92672>)</span>
+            <span style=color:#f92672>}</span>
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>   
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><h3 id=apply-a-filter-without-changing-buildgradlekts-or-buildgradle>Apply a filter without changing <code>build.gradle.kts</code> or <code>build.gradle</code></h3><ol><li>Add custom Gradle property for filter name to gradle.properties file</li></ol><pre><code class=language-properties data-lang=properties>filterName=&quot;default&quot;
+</code></pre><ol start=2><li>Use the property to configure plugin</li></ol><div class=book-tabs><input type=radio class=hidden name=tabs-applyFilterWithoutChanging id=tabs-applyFilterWithoutChanging-0 checked>
+<label for=tabs-applyFilterWithoutChanging-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>import</span> com.avito.kotlin.dsl.getOptionalStringProperty
+
+<span style=color:#75715e>// read property
+</span><span style=color:#75715e></span><span style=color:#66d9ef>val</span> filterName: String? <span style=color:#66d9ef>by</span> project
+<span style=color:#75715e>// or
+</span><span style=color:#75715e></span><span style=color:#66d9ef>val</span> filterName = project.getOptionalStringProperty(<span style=color:#e6db74>&#34;filterName&#34;</span>, <span style=color:#e6db74>&#34;default&#34;</span>)
+
+extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    configurationsContainer.register(<span style=color:#e6db74>&#34;local&#34;</span>) {
+        filter = filterName
+        <span style=color:#75715e>// else...   
+</span><span style=color:#75715e></span>    }    
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-applyFilterWithoutChanging id=tabs-applyFilterWithoutChanging-1>
+<label for=tabs-applyFilterWithoutChanging-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#f92672>import</span> static com<span style=color:#f92672>.</span><span style=color:#a6e22e>avito</span><span style=color:#f92672>.</span><span style=color:#a6e22e>kotlin</span><span style=color:#f92672>.</span><span style=color:#a6e22e>dsl</span><span style=color:#f92672>.</span><span style=color:#a6e22e>ProjectExtensionsKt</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getOptionalStringProperty</span>
+
+<span style=color:#75715e>// read property
+</span><span style=color:#75715e></span><span style=color:#66d9ef>def</span> filterName <span style=color:#f92672>=</span> project<span style=color:#f92672>.</span><span style=color:#a6e22e>hasProperty</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;filterName&#34;</span><span style=color:#f92672>)</span> <span style=color:#f92672>?</span> project<span style=color:#f92672>[</span><span style=color:#e6db74>&#34;filterName&#34;</span><span style=color:#f92672>]</span> <span style=color:#f92672>:</span> <span style=color:#e6db74>&#34;default&#34;</span>
+<span style=color:#75715e>// or
+</span><span style=color:#75715e></span><span style=color:#66d9ef>def</span> filterName <span style=color:#f92672>=</span> getOptionalStringProperty<span style=color:#f92672>(</span>project<span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;filterName&#34;</span><span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;default&#34;</span><span style=color:#f92672>)</span>
+
+instrumentation <span style=color:#f92672>{</span>
+    configurations <span style=color:#f92672>{</span>
+        local <span style=color:#f92672>{</span>
+            filter <span style=color:#f92672>=</span> filterName
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><ol start=3><li>Add <code>property</code> to CLI command if you want to override <code>filterName</code></li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>./gradlew instrumentationLocal -PfilterName<span style=color:#f92672>=</span>&lt;any name of defined filter&gt;
+</code></pre></div><h3 id=customize-a-filter-without-changing-buildgradlekts-or-buildgradle>Customize a filter without changing <code>build.gradle.kts</code> or <code>build.gradle</code></h3><p>You can customize everything by adding custom properties to CLI command e.g.</p><ol><li>Define <a href=#filter-tests-by-annotations>filter including tests by annotation</a></li><li>Add logic to check presence of Gradle property.</li></ol><div class=book-tabs><input type=radio class=hidden name=tabs-customizeFilterWithoutChanging id=tabs-customizeFilterWithoutChanging-0 checked>
+<label for=tabs-customizeFilterWithoutChanging-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>val</span> includedAnnotation: String? <span style=color:#66d9ef>by</span> project
+<span style=color:#75715e>// or
+</span><span style=color:#75715e></span><span style=color:#66d9ef>val</span> includedAnnotation = project.getOptionalStringProperty(<span style=color:#e6db74>&#34;includedAnnotation&#34;</span>)
+ 
+extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+    filters.register(<span style=color:#e6db74>&#34;filterName&#34;</span>) {
+        <span style=color:#66d9ef>val</span> annotation = <span style=color:#66d9ef>if</span>(includedAnnotation != <span style=color:#66d9ef>null</span>){
+            includedAnnotation
+        } <span style=color:#66d9ef>else</span> {
+            <span style=color:#e6db74>&#34;package.AnnotationClassName&#34;</span>
+        }
+        
+        <span style=color:#66d9ef>val</span> annotations = setOf(<span style=color:#66d9ef>annotation</span>)
+        fromSource.includeByAnnotations(annotations)
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-customizeFilterWithoutChanging id=tabs-customizeFilterWithoutChanging-1>
+<label for=tabs-customizeFilterWithoutChanging-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#f92672>import</span> static com<span style=color:#f92672>.</span><span style=color:#a6e22e>avito</span><span style=color:#f92672>.</span><span style=color:#a6e22e>kotlin</span><span style=color:#f92672>.</span><span style=color:#a6e22e>dsl</span><span style=color:#f92672>.</span><span style=color:#a6e22e>ProjectExtensionsKt</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getOptionalStringProperty</span>
+
+<span style=color:#75715e>// read property
+</span><span style=color:#75715e></span><span style=color:#66d9ef>def</span> includedAnnotation <span style=color:#f92672>=</span> project<span style=color:#f92672>.</span><span style=color:#a6e22e>hasProperty</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;includedAnnotation&#34;</span><span style=color:#f92672>)</span> <span style=color:#f92672>?</span> project<span style=color:#f92672>[</span><span style=color:#e6db74>&#34;includedAnnotation&#34;</span><span style=color:#f92672>]</span> <span style=color:#f92672>:</span> <span style=color:#66d9ef>null</span>
+<span style=color:#75715e>// or
+</span><span style=color:#75715e></span><span style=color:#66d9ef>def</span> includedAnnotation <span style=color:#f92672>=</span> getOptionalStringProperty<span style=color:#f92672>(</span>project<span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;includedAnnotation&#34;</span><span style=color:#f92672>)</span>
+
+instrumentation <span style=color:#f92672>{</span>
+    filters <span style=color:#f92672>{</span>
+        filterName <span style=color:#f92672>{</span>
+            <span style=color:#66d9ef>def</span> annotation <span style=color:#f92672>=</span> includedAnnotation <span style=color:#f92672>?:</span> <span style=color:#e6db74>&#34;package.AnnotationClassName&#34;</span>
+            <span style=color:#66d9ef>def</span> annotations <span style=color:#f92672>=</span> <span style=color:#f92672>[</span>annotation<span style=color:#f92672>]</span> <span style=color:#66d9ef>as</span> Set
+            fromSource<span style=color:#f92672>.</span><span style=color:#a6e22e>includeByAnnotations</span><span style=color:#f92672>(</span>annotations<span style=color:#f92672>)</span>
+        <span style=color:#f92672>}</span>
+    <span style=color:#f92672>}</span>   
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><ol start=3><li>Run Gradle task with property <code>includedAnnotation</code> to override filter</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>./gradlew instrumentationLocal -PincludedAnnotation<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;package.AnotherAnnotationClassName&#34;</span> 
+</code></pre></div><h2 id=find-out-how-filters-were-applied>Find out how filters were applied</h2><p>If build finishes successfully It will produce files with debug information
+Files will be located at:<br><code>&lt;Project root folder>/outputs/&lt;subproject name>/instrumentation/&lt;instrumentation task name>/filter</code></p><h3 id=find-out-what-filter-config-was>Find out what filter config was</h3><p>Look at file <code>filter-config.json</code></p><h3 id=find-out-what-filters-applied>Find out what filters applied</h3><p>Look at file <code>filters-applied.json</code></p><h3 id=find-out-what-tests-were-filtered>Find out what tests were filtered</h3><p>Look at file <code>filters-excludes.json</code> \</p><ul><li>You may find filtered tests grouped by filter names declared in <code>filters-applied.json</code></li><li>You may find a filtered test by name</li></ul><h2 id=choosing-target-for-tests-execution>Choosing target for tests execution</h2><h3 id=run-tests-on-kubernetes-target-from-a-local-machine>Run tests on kubernetes target from a local machine</h3><blockquote class="book-hint info">This text contains Avito specific details</blockquote><ol><li>Get access to kubernetes cloud: <a href=http://links.k.avito.ru/Kubectl>internal doc</a></li><li><a href=http://links.k.avito.ru/androidEmulatorServiceDesk>Request</a> <code>exec</code> access to <code>android-emulator</code> namespace in <code>beta</code> cluster</li><li>Setup a context on <code>beta</code>, <code>android-emulator</code> with your user access.<br>More about kubernetes context: <a href=https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#define-clusters-users-and-contexts>Official docs</a></li><li>Add a configuration with target on kubernetes</li></ol><div class=book-tabs><input type=radio class=hidden name=tabs-addK8SInstrumentation id=tabs-addK8SInstrumentation-0 checked>
+<label for=tabs-addK8SInstrumentation-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>import</span> com.avito.instrumentation.reservation.request.Device.Emulator.Emulator28
+
+configurationsContainer.register(<span style=color:#e6db74>&#34;k8s&#34;</span>) {                    
+
+            targetsContainer.register(<span style=color:#e6db74>&#34;api28&#34;</span>) {
+                deviceName = <span style=color:#e6db74>&#34;API28&#34;</span>
+
+                scheduling = SchedulingConfiguration().apply {
+                    quota = QuotaConfiguration().apply {
+                        retryCount = <span style=color:#ae81ff>1</span>
+                        minimumSuccessCount = <span style=color:#ae81ff>1</span>
+                    }
+
+                    reservation = TestsBasedDevicesReservationConfiguration().apply {
+                        device = Emulator28
+                        maximum = <span style=color:#ae81ff>1</span>
+                        minimum = <span style=color:#ae81ff>1</span>
+                        testsPerEmulator = <span style=color:#ae81ff>1</span>
+                    }
+                }
+            }
+        }
+</code></pre></div></div><input type=radio class=hidden name=tabs-addK8SInstrumentation id=tabs-addK8SInstrumentation-1>
+<label for=tabs-addK8SInstrumentation-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#f92672>import</span> static com<span style=color:#f92672>.</span><span style=color:#a6e22e>avito</span><span style=color:#f92672>.</span><span style=color:#a6e22e>instrumentation</span><span style=color:#f92672>.</span><span style=color:#a6e22e>reservation</span><span style=color:#f92672>.</span><span style=color:#a6e22e>request</span><span style=color:#f92672>.</span><span style=color:#a6e22e>Device</span><span style=color:#f92672>.</span><span style=color:#a6e22e>Emulator</span><span style=color:#f92672>.</span><span style=color:#a6e22e>Emulator28</span>
+
+instrumentation <span style=color:#f92672>{</span>
+    configurations <span style=color:#f92672>{</span>
+        k8s <span style=color:#f92672>{</span>
+            targets <span style=color:#f92672>{</span>
+                api28 <span style=color:#f92672>{</span>
+                    deviceName <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;API28&#34;</span>
+                    scheduling <span style=color:#f92672>{</span>
+                        quota <span style=color:#f92672>{</span>
+                            retryCount <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                            minimumSuccessCount <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                        <span style=color:#f92672>}</span>
+
+                        testsCountBasedReservation <span style=color:#f92672>{</span>
+                            device <span style=color:#f92672>=</span> Emulator28<span style=color:#f92672>.</span><span style=color:#a6e22e>INSTANCE</span>
+                            maximum <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                            minimum <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                            testsPerEmulator <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                        <span style=color:#f92672>}</span>
+                    <span style=color:#f92672>}</span>
+                <span style=color:#f92672>}</span>   
+            <span style=color:#f92672>}</span>       
+        <span style=color:#f92672>}</span>   
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><ol start=5><li>Run tests with extra parameters specified.</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>./gradlew :samples:test-app:instrumentation&lt;configuration name&gt; 
+    -PkubernetesContext<span style=color:#f92672>=</span>&lt;your context&gt; // <span style=color:#66d9ef>for</span> Avito probably <span style=color:#e6db74>&#39;beta&#39;</span>
+</code></pre></div><p>We will looking for <code>.kube/config</code> in your $HOME</p><h3 id=run-tests-on-local-emulator-target>Run tests on local emulator target</h3><ol start=0><li>Add a configuration with target on local emulator</li></ol><div class=book-tabs><input type=radio class=hidden name=tabs-addLocalEmulator id=tabs-addLocalEmulator-0 checked>
+<label for=tabs-addLocalEmulator-0>Kotlin</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>import</span> com.avito.instrumentation.reservation.request.Device.LocalEmulator
+
+extensions.getByType&lt;GradleInstrumentationPluginConfiguration&gt;().apply {
+configurationsContainer.register(<span style=color:#e6db74>&#34;local&#34;</span>) {
+        targetsContainer.register(<span style=color:#e6db74>&#34;api28&#34;</span>) {
+            deviceName = <span style=color:#e6db74>&#34;API28&#34;</span>
+
+            scheduling = SchedulingConfiguration().apply {
+                quota = QuotaConfiguration().apply {
+                    retryCount = <span style=color:#ae81ff>1</span>
+                    minimumSuccessCount = <span style=color:#ae81ff>1</span>
+                }
+
+                reservation = TestsBasedDevicesReservationConfiguration().apply {
+                    device = LocalEmulator.device(<span style=color:#ae81ff>28</span>, <span style=color:#e6db74>&#34;Android_SDK_built_for_x86_64&#34;</span>)
+                    maximum = <span style=color:#ae81ff>1</span>
+                    testsPerEmulator = <span style=color:#ae81ff>1</span>
+                }
+            }
+        }
+    }
+}
+</code></pre></div></div><input type=radio class=hidden name=tabs-addLocalEmulator id=tabs-addLocalEmulator-1>
+<label for=tabs-addLocalEmulator-1>Groovy</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#f92672>import</span> com.avito.instrumentation.reservation.request.Device.LocalEmulator
+
+instrumentation <span style=color:#f92672>{</span>
+    configurations <span style=color:#f92672>{</span>
+        local <span style=color:#f92672>{</span>
+            targets <span style=color:#f92672>{</span>
+                api28 <span style=color:#f92672>{</span>
+                    deviceName <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;API28&#34;</span>
+                    scheduling <span style=color:#f92672>{</span>
+                        quota <span style=color:#f92672>{</span>
+                            retryCount <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                            minimumSuccessCount <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                        <span style=color:#f92672>}</span>
+
+                        testsCountBasedReservation <span style=color:#f92672>{</span>
+                            device <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> LocalEmulator<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;28&#34;</span><span style=color:#f92672>,</span> <span style=color:#ae81ff>28</span><span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;Android_SDK_built_for_x86_64&#34;</span><span style=color:#f92672>)</span>
+                            maximum <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                            testsPerEmulator <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+                        <span style=color:#f92672>}</span>
+                    <span style=color:#f92672>}</span>
+                <span style=color:#f92672>}</span>   
+            <span style=color:#f92672>}</span>       
+        <span style=color:#f92672>}</span>   
+    <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div></div></div><ol><li>Run an emulator with 28 API</li><li>Run Gradle CLI command</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#e6db74>`</span>./gradlew :&lt;project gradle path&gt;:instrumentation&lt;configuration name&gt;<span style=color:#e6db74>`</span>, e.g.
+<span style=color:#e6db74>`</span>./gradlew :samples:test-app:instrumentationLocal<span style=color:#e6db74>`</span> 
+</code></pre></div><h2 id=run-test-on-apk-was-built-before>Run test on APK was built before</h2><p>Plugin builds APKs on his own by default.<br>If for any reason you have to build APK externally, you can pass files manually:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#75715e>// optional
+</span><span style=color:#75715e></span>applicationApk = <span style=color:#e6db74>&#34;/path/to/app.apk&#34;</span>
+<span style=color:#75715e>// optional
+</span><span style=color:#75715e></span>testApplicationApk = <span style=color:#e6db74>&#34;/path/to/test-app-debug-androidTest.apk&#34;</span>
+</code></pre></div><h2 id=run-tests-on-google-cloud-platform>Run tests on Google Cloud Platform</h2><p>Work in progress</p><ol start=0><li>Create and configure Kubernetes cluster TODO
+0. Create a node pool. Node must contain CPU that supports KVM <a href=https://cloud.google.com/compute/docs/instances/enable-nested-virtualization-vm-instances#gcloud>https://cloud.google.com/compute/docs/instances/enable-nested-virtualization-vm-instances#gcloud</a></li><li>Add configuration for your cluster to ./kube/config</li><li>Providing credentials to the application <a href=https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application>https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application</a> TODO
+0. Run on local machine TODO
+0. Run locally <code>gcloud auth application-default login</code> one time will be enough
+0. Run <code>./gradlew &lt;instrumentationTaskName> -PkubernetesContext=&lt;context from ./kube/config></code>
+0. Run on CI</li><li>Customize deployment TODO
+0. Custom POD image
+0. Customize POD cpu and ram
+0. Custom namespace</li></ol></article><footer class=book-footer><div class="flex justify-between"><div class=book-languages tabindex=0 aria-haspopup=true><ul><li class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+English</li></ul><ul class=book-languages-list><li class=active><a href=/avito-android/ class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+English</a></li><li><a href=/avito-android/ru/ class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+Русский</a></li></ul></div><div><a class="flex align-center" href=https://github.com/avito-tech/avito-android/tree/develop/docs/content/docs/test/Runner.md target=_blank rel=noopener><img src=/avito-android/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div><div><a class="flex justify-end" href=/avito-android/docs/contacts><span>Contact us</span></a></div></div></footer><div class=book-comments></div><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#getting-started>Getting started</a></li><li><a href=#examples>Examples</a></li><li><a href=#filtering-tests-for-execution>Filtering tests for execution</a><ul><li><a href=#filter-tests-by-annotations>Filter tests by annotations</a></li><li><a href=#filter-flaky-tests>Filter flaky tests</a></li><li><a href=#filter-tests-by-prefix-or-name>Filter tests by prefix or name</a></li><li><a href=#filter-tests-by-statuses-from-previous-run-on-the-same-commit>Filter tests by statuses from previous run on the same commit</a></li><li><a href=#filter-tests-by-statuses-from-report-by-id>Filter tests by statuses from report by id</a></li><li><a href=#apply-a-filter-without-changing-buildgradlekts-or-buildgradle>Apply a filter without changing <code>build.gradle.kts</code> or <code>build.gradle</code></a></li><li><a href=#customize-a-filter-without-changing-buildgradlekts-or-buildgradle>Customize a filter without changing <code>build.gradle.kts</code> or <code>build.gradle</code></a></li></ul></li><li><a href=#find-out-how-filters-were-applied>Find out how filters were applied</a><ul><li><a href=#find-out-what-filter-config-was>Find out what filter config was</a></li><li><a href=#find-out-what-filters-applied>Find out what filters applied</a></li><li><a href=#find-out-what-tests-were-filtered>Find out what tests were filtered</a></li></ul></li><li><a href=#choosing-target-for-tests-execution>Choosing target for tests execution</a><ul><li><a href=#run-tests-on-kubernetes-target-from-a-local-machine>Run tests on kubernetes target from a local machine</a></li><li><a href=#run-tests-on-local-emulator-target>Run tests on local emulator target</a></li></ul></li><li><a href=#run-test-on-apk-was-built-before>Run test on APK was built before</a></li><li><a href=#run-tests-on-google-cloud-platform>Run tests on Google Cloud Platform</a></li></ul></nav></aside></main></body></html>

@@ -1,0 +1,332 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Замеры перформанса экрана (internal) Что умеем замерять Пользовательские метрики  время от тача до начала инициализации экрана (предынициализация) время от тача до окончания отрисовки каждого из потоков данных экрана  Этапы работы экрана  время инициализации экрана (ScreenInitTracker) время DI экрана (ScreenDiInjectTracker) время загрузки данных по сети и с диска (наследники ContentLoadingTracker) время обработки данных, например конвертации сетевых моделей в презентационные (ViewDataPreparingTracker) - не всегда используется, потому что не везде есть время отрисовки (с момента посылки команды на отрисовку до того как соответсвующий Runnable отработал на main thread) длительность инициализации и DI компонентов (сабмодулей)  Отправляем метрики в statsd для realtime-аналитики и clickstream для AB-тестирования и детального анализа."><meta property="og:title" content="Реалтайм-аналитика"><meta property="og:description" content="Замеры перформанса экрана (internal) Что умеем замерять Пользовательские метрики  время от тача до начала инициализации экрана (предынициализация) время от тача до окончания отрисовки каждого из потоков данных экрана  Этапы работы экрана  время инициализации экрана (ScreenInitTracker) время DI экрана (ScreenDiInjectTracker) время загрузки данных по сети и с диска (наследники ContentLoadingTracker) время обработки данных, например конвертации сетевых моделей в презентационные (ViewDataPreparingTracker) - не всегда используется, потому что не везде есть время отрисовки (с момента посылки команды на отрисовку до того как соответсвующий Runnable отработал на main thread) длительность инициализации и DI компонентов (сабмодулей)  Отправляем метрики в statsd для realtime-аналитики и clickstream для AB-тестирования и детального анализа."><meta property="og:type" content="article"><meta property="og:url" content="https://avito-tech.github.io/avito-android/docs/performance/analytics/"><title>Реалтайм-аналитика | Avito Android</title><link rel=icon href=/avito-android/favicon.png type=image/x-icon><link rel=stylesheet href=/avito-android/book.min.63eb88daa545365405ecdbb21033286a325c60a36cfa6d22d21e7c3bc9286941.css integrity="sha256-Y+uI2qVFNlQF7NuyEDMoajJcYKNs+m0i0h58O8koaUE="><script defer src=/avito-android/en.search.min.d9e337e5dc38abc662c5cf809700f6780dbb7534e363f2dcc54816fe59bb388f.js integrity="sha256-2eM35dw4q8Zixc+AlwD2eA27dTTjY/LcxUgW/lm7OI8="></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-157613383-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></head><body><input type=checkbox class=hidden id=menu-control><main class="container flex"><aside class=book-menu><nav><h2 class=book-brand><a href=/avito-android><span>Avito Android</span></a></h2><div class=book-search><input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/><div class="book-search-spinner spinner hidden"></div><ul id=book-search-results></ul></div><ul><li><a href=https://avito-tech.github.io/avito-android/>Introduction</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/tech_radar/techradar/>Tech radar</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/knownissues/>Known Issues</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contacts/>Contacts</a></li><li>Projects<ul><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildchecks/>Build checks</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildproperties/>Build properties</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/buildtrace/>Build trace</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/cisteps/>CI Steps</a></li></ul></li><li>Contributing<ul><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/howtostart/>How to start</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/docs/>Documentation</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/codereview/>Code Review</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/codestyle/>Code Style</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/contributing/featuretoggles/>Feature Toggles</a></li></ul></li><li>IDE<ul><li><a href=https://avito-tech.github.io/avito-android/docs/ide/configurations/>Конфигурации</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/templates/>Шаблоны</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/speedup/>Speedup</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ide/benchmarking/>Бенчмарки</a></li></ul></li><li>Builds<ul><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/buildtypes/>Типы сборки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/dependencies/>Зависимости</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/minimization/>Минимизация</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/benchmarks/>Бенчмарки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/profiling/>Профилирование</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/buildmetrics/>Метрики</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/mirakle/>Mirakle</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/assemble/troubleshooting/>Troubleshooting</a></li></ul></li><li>Architecture<ul><li><a href=https://avito-tech.github.io/avito-android/docs/architecture/dagger/>Dagger</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/architecture/modules/>Modules</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/analytics/analytics/>Аналитика</a><ul><li><a href=https://avito-tech.github.io/avito-android/docs/analytics/statsd/>Statsd</a></li></ul></li><li>Testing<ul><li><a href=https://avito-tech.github.io/avito-android/docs/test/run/>Запуск тестов</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/runner/>Test Runner</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/manual/>Ручное</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testmanagementsystem/>Test Management System</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testcaseincode/>Test case in code</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/unittesting/>Юнит тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/screenshottesting/>Скриншотные тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/testminimized/>Test minimized</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/reportviewer/>Report Viewer</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/troubleshootingui/>Troubleshooting</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/workmanager/>Work Manager Testing</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/flakyannotation/>Flaky annotation</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/flakytests/>Нестабильные тесты</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/toast/>Toast</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/snackbar/>Snackbar</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test/screenchecks/>Screen checks</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/testframework/>Test framework</a><ul><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/mocking/>Mocking</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/test_framework/internals/>Internals</a></li></ul></li><li><a href=http://links.k.avito.ru/ff>Design System</a></li><li>Performance<ul><li><a href=https://avito-tech.github.io/avito-android/docs/performance/analytics/>Аналитика</a></li></ul></li><li>Checks<ul><li><a href=https://avito-tech.github.io/avito-android/docs/checks/androidlint/>Android lint</a></li></ul></li><li>CI<ul><li><a href=https://avito-tech.github.io/avito-android/docs/ci/civalues/>Требования</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/projects/cisteps/>CI Gradle Plugin</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/customgradleplugins/>Custom Gradle Plugins</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/impactanalysis/>Impact analysis</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/ci/containers/>Containers</a></li></ul></li><li>CD<ul><li><a href=https://avito-tech.github.io/avito-android/docs/cd/release/>Релиз</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/cd/artifacts/>Артефакты сборки</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/cd/qapps/>QApps</a></li></ul></li><li><a href=https://avito-tech.github.io/avito-android/docs/release/>Infra Release</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/infrastructure/>Infrastructure (Github project)</a></li><li><a href=https://avito-tech.github.io/avito-android/docs/externallibrarychangeprocess/>Внешние библиотеки</a></li></ul><ul><li><a href=/avito-android/posts/>Blog</a></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/avito-android/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Реалтайм-аналитика</strong>
+<label for=toc-control><img src=/avito-android/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><input type=checkbox class=hidden id=toc-control><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#что-умеем-замерять>Что умеем замерять</a><ul><li><a href=#пользовательские-метрики>Пользовательские метрики</a></li><li><a href=#этапы-работы-экрана>Этапы работы экрана</a></li></ul></li><li><a href=#что-нужно-знать-перед-написанием-кода>Что нужно знать перед написанием кода</a></li><li><a href=#типы-замеряемых-экранов>Типы замеряемых экранов</a><ul><li><a href=#самостоятельный-экран>Самостоятельный экран</a></li><li><a href=#cубкомпонент>Cубкомпонент</a></li><li><a href=#экран-с-предзагрузкой-данных>Экран с предзагрузкой данных</a></li></ul></li><li><a href=#типы-трекеров>Типы трекеров</a></li><li><a href=#типы-флоу-экранов>Типы флоу экранов</a><ul><li><a href=#стандартный-флоу-экранов>Стандартный флоу экранов</a></li><li><a href=#флоу-экранов-с-предзагрузкой>Флоу экранов с предзагрузкой</a></li><li><a href=#пример-с-главной-страницы>Пример с главной страницы</a></li></ul></li><li><a href=#как-замерять-перформанс-самостоятельного-экрана-или-субкомпонента>Как замерять перформанс самостоятельного экрана или субкомпонента</a></li><li><a href=#как-выглядит-трекер-с-предзагрузкой>Как выглядит трекер с предзагрузкой</a></li><li><a href=#как-во-время-разработки-проверить-что-замеры-отправляются>Как во время разработки проверить, что замеры отправляются</a><ul><li><a href=#пример-в-графане>Пример в графане</a></li></ul></li></ul></nav></aside></header><article class=markdown><h1 id=замеры-перформанса-экрана-internal>Замеры перформанса экрана (internal)</h1><h2 id=что-умеем-замерять>Что умеем замерять</h2><h3 id=пользовательские-метрики>Пользовательские метрики</h3><ul><li>время от тача до начала инициализации экрана (предынициализация)</li><li>время от тача до окончания отрисовки каждого из потоков данных экрана</li></ul><h3 id=этапы-работы-экрана>Этапы работы экрана</h3><ul><li>время инициализации экрана (<code>ScreenInitTracker</code>)</li><li>время <code>DI</code> экрана (<code>ScreenDiInjectTracker</code>)</li><li>время загрузки данных по сети и с диска (<code>наследники ContentLoadingTracker</code>)</li><li>время обработки данных, например конвертации сетевых моделей в презентационные (<code>ViewDataPreparingTracker</code>) - не всегда используется, потому что не везде есть</li><li>время отрисовки (с момента посылки команды на отрисовку до того как соответсвующий Runnable отработал на main thread)</li><li>длительность инициализации и <code>DI</code> компонентов (сабмодулей)</li></ul><p>Отправляем метрики в statsd для realtime-аналитики и clickstream для AB-тестирования и детального анализа.</p><p>Пользовательские метрики отражают ожидания пользователя: тапнул по экрану - получил, что хотел.</p><h2 id=что-нужно-знать-перед-написанием-кода>Что нужно знать перед написанием кода</h2><ul><li>определить тип экрана (с предзагрузкой данных, самостоятельный, субкомпонент)</li><li>создать абстракцию трекера экрана в соответствии с флоу экрана <a href=#%d1%82%d0%b8%d0%bf%d1%8b-%d1%84%d0%bb%d0%be%d1%83-%d1%8d%d0%ba%d1%80%d0%b0%d0%bd%d0%be%d0%b2>Типы флоу экранов</a></li><li>добавить замеры в код</li><li>синхронизировать имя вашего экрана (screenName) и замеряемые типы контента с <a href=http://links.k.avito.ru/cfxNXAeB>таблицей</a> (согласовать имена с iOS-платформой)</li><li>проверить на дашборде, что ваши замеры действильно отправляются</li></ul><h2 id=типы-замеряемых-экранов>Типы замеряемых экранов</h2><h3 id=самостоятельный-экран>Самостоятельный экран</h3><ul><li><code>Activity</code> без фрагментов</li><li><code>Activity</code> с <code>Fragment</code>, если он один на экране</li><li>Конфигурация в которой есть <code>Activity</code> и несколько фрагментов одновременно на экране (В этом случае фрагменты выступают субкомпонентами)</li></ul><h3 id=cубкомпонент>Cубкомпонент</h3><ul><li><code>Fragment</code>, который является одним из нескольких отображаемых фрагментов самостоятельного экрана (публичный профиль, главная, etc)</li><li><code>Fragment</code>, который является одним из шагов какого-нибудь флоу (подачи, выставления рейтинга продавцу, etc)</li></ul><p>Если вы хотите все шаги какого-нибудь флоу затрекать как самостоятельные экраны, это также валидно.
+Рассматривать фрагмент как самостоятельный экран, так как и как субкомпонент в этом случае - вопрос предпочтений.
+Фрагмент, покрытый аналитикой, может и должен уметь выступать как самостоятельным экраном, так и субкомпонентом (элементом экрана).</p><h3 id=экран-с-предзагрузкой-данных>Экран с предзагрузкой данных</h3><p>Когда экран осуществляет сетевые запросы и подготовку данных для отображения на следующем экране.
+Например, при выставлении рейтинга продавцу, сначала нажимаем на рейтинг, открывается фейковый экран с лоадером.
+Этот экран запрашивает данные для отображения следующего экрана, который будет известен по итогам запроса.
+Если авторизация есть - переходим на флоу выставления рейтинга, если нет - на авторизацию.
+С точки зрения пользователя: нажал на рейтинг, появился лоадер, появился экран выбора объявления, по которому будет выставляться рейтинг.
+Разумно считать, что этап предварительной подготовки для экрана с выбором объявления является частью флоу рейтинга.</p><h2 id=типы-трекеров>Типы трекеров</h2><ul><li><code>ScreenDiInjectTracker</code> - трекает время инициализации <code>DI</code> и время предынициализации (от тача до начала <code>DI</code>)
+Время предынициализации трекается автоматически.</li><li><code>ScreenInitTracker</code> - время инициализации (создание и подключение презентеров, роутеров, вью)</li><li><code>LocalContentLoadingTrackerImpl</code> - загрузка одного из потоков данных из локального хранилища, скажем из префов</li><li><code>ServerContentLoadingTrackerImpl</code> - загрузка одного из потоков данных с сервера</li><li><code>ViewDataPreparingTracker</code> - подготовка данных для экрана (конвертация сетевых моделей в презентационные, например)</li><li><code>ContentDrawingTracker</code> - отрисовка данных. Через <code>handler.post</code> учитываает время, которое текущее изменение простояло в очереди на мейн треде</li><li><code>UnknownScreenTracker</code> - трекер для экрана с предзагрузкой данных</li></ul><p>Понятия:</p><ul><li><code>screenName</code> - имя экрана, которое обычно передается на этапе создания <code>DI</code></li><li><code>contentType</code> - название потока данных.</li><li><code>page</code> - номер страницы. Обычно используется для экранов с бесконечными списками.
+Отправляется первые пять страниц (<code>page-001</code>..<code>page-005</code>), остальные отправляются как <code>page-etc</code>. Можно опустить.</li><li><code>failure</code> - либо <code>failure</code> либо <code>success</code>. Можно использовать свою константу для фейла.</li><li><code>SCREEN</code> - константа, которая используется для того, чтобы ScreenInitTracker и ScreenDiInjectTracker
+работали по умолчанию в режиме для самостоятельного экрана.</li><li><code>NO_TIME</code> - константа, которая используется в аргументах фукнций трекинга некоторых трекеров, когда мы хотим отправить данные в <code>statsd</code>,
+которые получили с прошлого экрана <code>UnknownScreenTracker</code></li><li><code>SUCCESS</code> - дефолтная константа, которая используется в трекерах, которая обозначает, что в текущем потоке данных все операции прошли успешно.
+Успешно получили данные с сети, например, потом успешно их отрисовали.</li></ul><p>В случае <code>ScreenDiInjectTracker</code> и <code>ScreenInitTracker</code> contentType используется для отличения субкомпонента от компонента.
+Например для экрана-субкомпонета выбора объявления, по которому будет выставляться рейтинг продавцу это будет <code>select-advert</code>.
+В случае <code>ContentLoadingTracker</code>-ов, <code>ViewDataPreparingTracker</code>, <code>ContentDrawingTracker</code> используется для обозначения потока данных.
+Например на главной странице это объявления <code>adverts</code> и шорткаты <code>shortcuts</code>.</p><p>Пользовательские метрики отправляются только первый раз при трекинге.
+Этапы работы экрана отправляются каждый раз при вызове соответствующего метода трекинга.</p><p>Примеры вызовов методов трекеров:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>interface</span> <span style=color:#a6e22e>ContentDrawingTracker</span> : Tracker {
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackContentDrawingTracker</span>(page: Int? = <span style=color:#66d9ef>null</span>, failure: Boolean)
+
+}
+<span style=color:#75715e>//затрекали успешную отрисовку (например, список объявлений)
+</span><span style=color:#75715e></span>tracker.trackContentDrawingTracker(failure = <span style=color:#66d9ef>false</span>)
+
+<span style=color:#75715e>//затрекали неуспешную отрисовку (например, заглушку с предложением повторить запрос)
+</span><span style=color:#75715e></span>tracker.trackContentDrawingTracker(failure = <span style=color:#66d9ef>true</span>)
+</code></pre></div><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>interface</span> <span style=color:#a6e22e>ContentLoadingTracker</span> : Tracker {
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackContentLoading</span>(page: Int? = <span style=color:#66d9ef>null</span>, failure: String, durationMs: Long = NO_TIME)
+
+}
+
+<span style=color:#75715e>//затрекали успешную отрисовку 1 страницы (например, списка объявлений)
+</span><span style=color:#75715e></span>tracker.trackContentLoading(page = <span style=color:#ae81ff>1</span>, failure = SUCCESS)
+
+<span style=color:#75715e>//затрекали неуспешную отрисовку 1 страницы  (например, заглушку с предложением повторить запрос)
+</span><span style=color:#75715e></span>tracker.trackContentLoading(page = <span style=color:#ae81ff>1</span>, failure = FAILURE)
+</code></pre></div><h2 id=типы-флоу-экранов>Типы флоу экранов</h2><p>Флоу экранов бывают двух типов: стандартный и с предзагрузкой данных.</p><h3 id=стандартный-флоу-экранов>Стандартный флоу экранов</h3><ol><li>Пользователь нажимает на кнопку на экране А</li><li>Создается экран Б (здесь трекаем инициализацию и <code>DI</code>)</li><li>Экран Б грузит данные (трекаем загрузку потока данных)</li><li>Экран Б готовит презентационные данные (трекаем подготовку потока данных)</li><li>Экран Б отрисовывает презентационные данные (трекаем отрисовку потока данных)</li></ol><h3 id=флоу-экранов-с-предзагрузкой>Флоу экранов с предзагрузкой</h3><p>Этот флоу отличаются от стандартных тем, что данные для отображения экран грузит не сам:
+данные для экрана грузит какой-либо предшествующий экран.</p><p>Экран Б из примеров - это экран с предзагрузкой [с экрана А].</p><p>Вариант 1</p><ol><li>Пользователь нажимает на кнопку на экране А</li><li>Экран А грузит данные (Создаем <code>UnknownScreenTracker</code> и трекаем время загрузки данных)</li><li>Создается экран Б (здесь восстанавливаем данные с экрана A через <code>ScreenTransfer</code>)</li><li>Экран Б готовит презентационные данные</li><li>Экран Б отрисовывает презентационные данные</li></ol><p>Пример: пользователь нажимает кнопку &ldquo;разместить объявление&rdquo;. В зависимости от разных условий, пользователя могут отправить
+на экран размещенного объявления, на экран оплаты размещений или на экран применения дополнительных услуг.</p><p>Вариант 2</p><ol><li>Пользователь нажимает на кнопку на экране А</li><li>Экран А переходит на экран с крутилкой, где это происходит
+Создаем <code>UnknownScreenTracker</code> и трекаем время инициализации, <code>DI</code> и загрузки данных</li><li>Создается экран Б (здесь восстанавливаем данные с экрана A через <code>ScreenTransfer</code>)</li><li>Экран Б готовит презентационные данные</li><li>Экран Б отрисовывает презентационные данные</li></ol><p>Преимущественно такая логика представлена в iOS-платформе.</p><h3 id=пример-с-главной-страницы>Пример с главной страницы</h3><script src=https://unpkg.com/mermaid@8.5.2/dist/mermaid.min.js type=text/javascript async></script><script>mermaid.initialize({flowchart:{useMaxWidth:true}});</script><p class=mermaid>graph TD
+A(Тап по шорткату. Запоминаем дату тача) -->|ждем создания экрана| B(ОС создала экран Serp)
+B -->|пошел метод onCreate. Начинаем трекать DI | C(Dependency Injection)
+C -->|Здесь же начинаем трекать Init| D(Init. Закончили трекать когда подключились к презентеру)
+D --> E(load shortcuts)
+E --> G(prepare shortcuts)
+G --> K(draw shortcuts)
+D --> F(load serp)
+F --> H(prepare serp - переводим сетевые модели в презентационные)
+H --> L(draw serp)</p><h2 id=как-замерять-перформанс-самостоятельного-экрана-или-субкомпонента>Как замерять перформанс самостоятельного экрана или субкомпонента</h2><p>В dagger dependency понадобится:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>interface</span> <span style=color:#a6e22e>SelectAdvertDependencies</span> : ComponentDependencies {
+    ...
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>screenTrackerFactory</span>(): ScreenTrackerFactory
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>timerFactory</span>(): TimerFactory
+
+}
+</code></pre></div><p>Создаем dagger-модуль, который подключаем к компоненту экрана:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>@Module(includes = [Declarations<span style=color:#f92672>::</span><span style=color:#66d9ef>class</span>])
+<span style=color:#66d9ef>object</span> <span style=color:#a6e22e>SelectAdvertAnalyticsModule</span> {
+
+    @Provides
+    @PerFragment
+    @JvmStatic
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>providesScreenInitTracker</span>(
+        screenTrackerFactory: ScreenTrackerFactory,
+        @ScreenAnalytics screenName: String,
+        @ScreenAnalytics isSubComponent: Boolean,
+        factory: TimerFactory
+    ): ScreenInitTracker {
+        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>if</span> (isSubComponent) {
+            screenTrackerFactory.createInitTracker(screenName, factory, CONTENT_TYPE_SELECT_ADVERT)
+        } <span style=color:#66d9ef>else</span> {
+            screenTrackerFactory.createInitTracker(screenName, factory)
+        }
+    }
+
+    @Provides
+    @PerFragment
+    @JvmStatic
+    <span style=color:#66d9ef>internal</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>providesScreenDiInjectTracker</span>(
+        screenTrackerFactory: ScreenTrackerFactory,
+        @ScreenAnalytics screenName: String,
+        @ScreenAnalytics isSubComponent: Boolean,
+        factory: TimerFactory
+    ): ScreenDiInjectTracker {
+        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>if</span> (isSubComponent) {
+            screenTrackerFactory.createDiInjectTracker(screenName, factory, CONTENT_TYPE_SELECT_ADVERT)
+        } <span style=color:#66d9ef>else</span> {
+            screenTrackerFactory.createDiInjectTracker(screenName, factory)
+        }
+    }
+
+    @Provides
+    @PerFragment
+    @JvmStatic
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>providesScreenFlowTrackerProvider</span>(
+        screenTrackerFactory: ScreenTrackerFactory,
+        @ScreenAnalytics screenName: String,
+        factory: TimerFactory
+    ): ScreenFlowTrackerProvider {
+        <span style=color:#66d9ef>return</span> screenTrackerFactory.createScreenFlowTrackerProvider(
+            screenName,
+            factory
+        )
+    }
+
+    @Module
+    <span style=color:#66d9ef>internal</span> <span style=color:#66d9ef>interface</span> <span style=color:#a6e22e>Declarations</span> {
+
+        @Binds
+        @PerFragment
+        <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>bindSelectAdvertTracker</span>(tracker: SelectAdvertTrackerImpl): SelectAdvertTracker
+    }
+
+}
+</code></pre></div><ul><li>isSubComponent: Boolean - если экран может использоваться как отдельный экран и как субкомпонент, этот флаг подскажет,
+как правильно настроить трекеры для отправки данных</li><li>screenName - имя самостоятельного экрана, или родительского в случае субкомпонента. Требует согласования с iOS <a href=http://links.k.avito.ru/cfxNXAeB>табличка</a></li><li>CONTENT_TYPE_SELECT_ADVERT - строковая константа, которая помогает отличить данные текущего субкомпонента в графане от данных родительского экрана.
+Если константу не передавать как аргумент функции, то трекеры будут работать как для самостоятельного экрана с именем screenName</li><li>если ваш экран не будет выступать в качестве субкомпонента, то isSubComponent можно не использовать.</li></ul><p>Субкомпоненты удобны, когда вам нужно информацию со всех шагов видеть в одном окне в графане.</p><p>Отличия самостоятельных экранов от субкомпонентов:</p><ul><li>У субкомпонента есть родитель - самостоятельный экран, который передает субкомпоненту собственный screen name.</li><li>Все запросы на загрузку, подготовку и отрисовку буду относиться к screen name, который передал родитель</li><li>субкомпонент имеет строковую константу <code>content-type</code>, которая прибавляется при отправке метрик инициализации и <code>DI</code> в <code>statsd</code>,
+чтобы отличать их от основного экрана</li><li>У субкомпонентов трекается только абсолютное время <code>DI</code> и инициализации</li></ul><p>Создаем абстракцию трекера:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>HomeTrackerImpl</span> @Inject <span style=color:#66d9ef>constructor</span>(
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>val</span> flowTrackerProvider: ScreenFlowTrackerProvider
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>val</span> diInjectTracker: ScreenDiInjectTracker
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>val</span> initTracker: ScreenInitTracker
+    factory: TimerFactory
+) : HomeTracker {
+
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>var</span> locationFromSaveLoadTracker: ContentLoadingTracker? = <span style=color:#66d9ef>null</span>
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>var</span> locationLoadTracker: ContentLoadingTracker? = <span style=color:#66d9ef>null</span>
+
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>var</span> advertsLoadTracker: ContentLoadingTracker? = <span style=color:#66d9ef>null</span>
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>var</span> advertsPrepareTracker: ViewDataPreparingTracker? = <span style=color:#66d9ef>null</span>
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>var</span> advertsDrawingTracker: ContentDrawingTracker? = <span style=color:#66d9ef>null</span>
+
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>var</span> shortcutsLoadTracker: ContentLoadingTracker? = <span style=color:#66d9ef>null</span>
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>var</span> shortcutsPrepareTracker: ViewDataPreparingTracker? = <span style=color:#66d9ef>null</span>
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>var</span> shortcutsDrawingTracker: ContentDrawingTracker? = <span style=color:#66d9ef>null</span>
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackDiInject</span>(durationMs: Long) {
+        diInjectTracker.track(durationMs)
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startInit</span>() {
+        initTracker.start()
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackInit</span>() {
+        initTracker.trackInit()
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startLoadingLocation</span>() {
+        locationFromSaveLoadTracker =
+            flowTrackerProvider.getContentLoadingFromLocalStorage(CONTENT_LOAD_LOCATION_FROM_SAVE).apply { start() }
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackLocationLoadedFromSave</span>(locationIdForLoad: String?) {
+        locationFromSaveLoadTracker<span style=color:#f92672>?.</span>trackContentLoading(<span style=color:#66d9ef>null</span>, SUCCESS)
+        locationFromSaveLoadTracker = <span style=color:#66d9ef>null</span>
+
+        locationLoadTracker = <span style=color:#66d9ef>if</span> (locationIdForLoad != <span style=color:#66d9ef>null</span>) {
+            flowTrackerProvider.getContentLoadingFromRemoteStorage(CONTENT_LOAD_LOCATION)
+        } <span style=color:#66d9ef>else</span> {
+            flowTrackerProvider.getContentLoadingFromLocalStorage(CONTENT_LOAD_LOCATION)
+        }.apply { start() }
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackLocationLoaded</span>() {
+        locationLoadTracker<span style=color:#f92672>?.</span>trackContentLoading(<span style=color:#66d9ef>null</span>, SUCCESS)
+        locationLoadTracker = <span style=color:#66d9ef>null</span>
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackLocationLoadError</span>() {
+        locationLoadTracker<span style=color:#f92672>?.</span>trackContentLoading(<span style=color:#66d9ef>null</span>, FAILURE)
+        locationLoadTracker = <span style=color:#66d9ef>null</span>
+
+        locationFromSaveLoadTracker<span style=color:#f92672>?.</span>trackContentLoading(<span style=color:#66d9ef>null</span>, FAILURE)
+        locationFromSaveLoadTracker = <span style=color:#66d9ef>null</span>
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startLoadingAdverts</span>() {
+        advertsLoadTracker =
+            flowTrackerProvider.getContentLoadingFromRemoteStorage(CONTENT_TYPE_ADVERT_ITEMS)
+                .apply { start() }
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsLoaded</span>(page: Int) {
+        trackAdvertsLoaded(page, SUCCESS)
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsPrepare</span>(page: Int) {
+        trackAdvertsPrepare(page, <span style=color:#66d9ef>false</span>)
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startAdvertsDraw</span>() {
+        startAdvertsDrawingTracker()
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsDraw</span>(page: Int) {
+        trackAdvertsDraw(page, <span style=color:#66d9ef>false</span>)
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsLoadError</span>(page: Int) {
+        trackAdvertsLoaded(page, FAILURE)
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsErrorPrepare</span>(page: Int) {
+        trackAdvertsPrepare(page, <span style=color:#66d9ef>true</span>)
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsErrorDraw</span>(page: Int) {
+        trackAdvertsDraw(page, <span style=color:#66d9ef>true</span>)
+    }
+
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsLoaded</span>(page: Int, result: String) {
+        advertsLoadTracker<span style=color:#f92672>?.</span>trackContentLoading(page, result)
+        advertsLoadTracker = <span style=color:#66d9ef>null</span>
+
+        advertsPrepareTracker = flowTrackerProvider.getViewPreparing(CONTENT_TYPE_ADVERT_ITEMS).apply { start() }
+    }
+
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsPrepare</span>(page: Int, failure: Boolean) {
+        advertsPrepareTracker<span style=color:#f92672>?.</span>trackViewDataPreparing(page, failure)
+        advertsPrepareTracker = <span style=color:#66d9ef>null</span>
+    }
+
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startAdvertsDrawingTracker</span>() {
+        advertsDrawingTracker = flowTrackerProvider.getContentDrawing(CONTENT_TYPE_ADVERT_ITEMS).apply { start() }
+    }
+
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackAdvertsDraw</span>(page: Int, failure: Boolean) {
+        advertsDrawingTracker<span style=color:#f92672>?.</span>trackContentDrawingTracker(page, failure)
+        advertsDrawingTracker = <span style=color:#66d9ef>null</span>
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startLoadingShortcuts</span>(local: Boolean) {
+        shortcutsLoadTracker = <span style=color:#66d9ef>if</span> (local) {
+            flowTrackerProvider.getContentLoadingFromLocalStorage(CONTENT_TYPE_SHORTCUTS)
+        } <span style=color:#66d9ef>else</span> {
+            flowTrackerProvider.getContentLoadingFromRemoteStorage(CONTENT_TYPE_SHORTCUTS)
+        }.apply { start() }
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackShortcutsLoaded</span>() {
+        shortcutsLoadTracker<span style=color:#f92672>?.</span>trackContentLoading(<span style=color:#66d9ef>null</span>, SUCCESS)
+        shortcutsLoadTracker = <span style=color:#66d9ef>null</span>
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startShortcutsPrepare</span>() {
+        shortcutsPrepareTracker = flowTrackerProvider.getViewPreparing(CONTENT_TYPE_SHORTCUTS).apply { start() }
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackShortcutsPrepare</span>() {
+        shortcutsPrepareTracker<span style=color:#f92672>?.</span>trackViewDataPreparing(<span style=color:#66d9ef>null</span>, <span style=color:#66d9ef>false</span>)
+        shortcutsPrepareTracker = <span style=color:#66d9ef>null</span>
+
+        shortcutsDrawingTracker = flowTrackerProvider.getContentDrawing(CONTENT_TYPE_SHORTCUTS).apply { start() }
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackShortcutsDraw</span>() {
+        shortcutsDrawingTracker<span style=color:#f92672>?.</span>trackContentDrawingTracker(<span style=color:#66d9ef>null</span>, <span style=color:#66d9ef>false</span>)
+        shortcutsDrawingTracker = <span style=color:#66d9ef>null</span>
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>stopShortcutsLoad</span>() {
+        shortcutsPrepareTracker = <span style=color:#66d9ef>null</span>
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackShortcutsLoadError</span>() {
+        shortcutsLoadTracker<span style=color:#f92672>?.</span>trackContentLoading(<span style=color:#66d9ef>null</span>, FAILURE)
+        shortcutsLoadTracker = <span style=color:#66d9ef>null</span>
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startReloadSession</span>() {
+        stopAllSessions()
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startLoadMoreSession</span>() {
+        stopAllSessions()
+    }
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>stopLoadAdvertSession</span>() {
+        stopAllSessions()
+    }
+</code></pre></div><h2 id=как-выглядит-трекер-с-предзагрузкой>Как выглядит трекер с предзагрузкой</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>interface</span> <span style=color:#a6e22e>UnknownScreenTracker</span> {
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackInit</span>(durationMs: Long)
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackDiInject</span>(durationMs: Long)
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>startLoading</span>()
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>trackLoading</span>()
+
+    <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>toScreenTransfer</span>(): ScreenTransfer
+}
+</code></pre></div><p>Вариант 1.
+Необходимо затрекать только loading, потому что экран в целом отдельный и только запрос относится к целевому экрану.</p><p>Вариант 2.
+Необходимо затрекать init, di, loading, потому что экран целиком занимается тем, что выясняет, какой экран будет следующим.</p><p>Метод <code>toScreenTransfer</code> отдает нам объект, хранящий все необходимые данные для передачи целевому экрану:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>ScreenTransfer</span>(
+    <span style=color:#66d9ef>val</span> initTime: Long,
+    <span style=color:#66d9ef>val</span> loadingTime: Long,
+    <span style=color:#66d9ef>val</span> diTime: Long
+): Parcelable
+</code></pre></div><p>Этот объект необходимо положить в интент для целевого экрана с помощью <code>BaseActivity.saturateIntentWithTrackingInfo</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>followDeepLink</span>(deepLink: DeepLink) {
+        deepLinkIntentFactory.getIntent(deepLink)
+            <span style=color:#f92672>?.</span>let { startActivity(saturateIntentWithTrackingInfo(it, tracker.toScreenTransfer())) }
+    }
+</code></pre></div><p>В целевом экране необходимо затрекать эти данные в onCreate:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>if</span> (savedInstanceState == <span style=color:#66d9ef>null</span>) {
+    <span style=color:#66d9ef>val</span> screenTransfer = rescueScreenTransfer()
+    screenTransfer<span style=color:#f92672>?.</span>let {
+        tracker.recover(it)
+    }
+}
+</code></pre></div><p>Код трекера</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>RatingPublishTrackerImpl</span> @Inject <span style=color:#66d9ef>constructor</span>(
+    ...
+    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>val</span> recovery: ScreenTransferRecovery
+) : RatingPublishTracker {
+
+    <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>recover</span>(transfer: ScreenTransfer) {
+        recovery.recover(transfer, RATING_PUBLISH_NAME, CONTENT_TYPE_PRELOAD)
+    }
+</code></pre></div><p>CONTENT_TYPE_PRELOAD - константа, которая позволяет правильно затрекать поток данных который был получен на предыдущем экране.</p><p>RATING_PUBLISH_NAME - имя текущего экрана</p><p>В даггер модуль добавить:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin>@Scope: PerActivity, PerFragment
+@Binds
+<span style=color:#66d9ef>fun</span> <span style=color:#a6e22e>bindScreenTransferRecovery</span>(recovery: ScreenTransferRecovery.Impl): ScreenTransferRecovery
+</code></pre></div><h2 id=как-во-время-разработки-проверить-что-замеры-отправляются>Как во время разработки проверить, что замеры отправляются</h2><p>Можно смотреть лог, в нем будут подобные строчки:</p><p><code>TIME:android-debug.355.os.29.screen-performance.absolute.SearchResults.-.content-loading-server.advertisements.page-001.Wi-Fi.-.success:992</code></p><ul><li><code>android-debug</code> - дебажная версия приложения, в релизной - <code>android</code></li><li>355 - <code>version code</code></li><li>29 - версия ОС</li><li><code>SearchResults</code> - <code>screenName</code>, имя экрана</li><li><code>content-loading-server</code> - загрузка данных с сервера</li><li><code>advertisements</code> - <code>contentType</code>, поток данных - объявления</li><li><code>success</code> - запрос закончился успешно</li><li>992 - количество миллиисекунд, которые длился запрос</li></ul><p>Чтобы посмотреть отсылаемые в графану значения, нужно</p><ul><li>зайти на <a href=http://links.k.avito.ru/3L>дашборд</a></li><li>В <code>Screen name</code> выбрать имя вашего экрана</li><li>В <code>Release/debug</code> выбрать <code>android-debug</code> для <code>debug</code>-сборки, и <code>android</code> - для релизной</li><li>Должны появиться значения на дашбордах</li></ul><p>Данные в дашборде отображаются с 30-секундной задержкой через сервис агрегации метрик statsd.</p><h3 id=пример-в-графане>Пример в графане</h3><p>Пример с экрана <code>RatingPublish</code></p><p><img src=https://user-images.githubusercontent.com/1104540/74605039-2a877d00-50d5-11ea-9172-2364796b848f.png alt></p><p>В панели Steps можно увидеть:</p><ul><li><code>preinit</code> - время от тача по кнопке оставить рейтинг до начала <code>DI</code> экрана с флоу проставления рейтинга.
+Этот этап включает промежуточный шаг, когда пользователь видел лоадер <code>preload</code></li><li><code>init</code> - этап инициализации экрана <code>RatingPublish</code></li><li><code>di-inject</code> - этап <code>DI</code> экрана <code>RatingPublish</code></li><li><code>load preload</code> - Промежуточный этап, когда пользователь видел лоадер <code>preload</code>.
+Затрекали с помощью <code>UnknownScreenTracker</code></li><li><code>draw preload</code> - отрисовка данных полученных с прошлого экрана</li><li><code>load adverts-list</code> - этап загрузки с сервера списка объявлений на субкомпоненте-фрагменте <code>select-advert</code>
+(выбор объявления, по которому будет проставляться рейтинг, первый шаг на флоу проставления рейтинга)</li><li><code>load next-step</code> - этап загрузки с сервера следующего этапа экрана <code>RatingPublish</code></li><li><code>draw next-step, draw adverts-list</code> - время отрисовки. Не стал отдельно трекать подготовку, ее здесь нет.
+Если бы залогировал, был бы еще этап подготовки: <code>parse next-step, parse adverts-list</code></li><li><code>component init select-advert</code> - этап инициализации субкомпонента <code>select-advert</code></li><li><code>component di preload, component init preload</code> - затрекали как субкомпонент время инициализации и <code>DI</code> с прошлого экрана</li><li><code>component di select-advert</code> - этап <code>DI</code> субкомпонента <code>select-advert</code></li></ul></article><footer class=book-footer><div class="flex justify-between"><div class=book-languages tabindex=0 aria-haspopup=true><ul><li class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+English</li></ul><ul class=book-languages-list><li class=active><a href=/avito-android/ class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+English</a></li><li><a href=/avito-android/ru/ class=flex><img src=/avito-android/svg/translate.svg class=book-icon alt=Languages>
+Русский</a></li></ul></div><div><a class="flex align-center" href=https://github.com/avito-tech/avito-android/tree/develop/docs/content/docs/performance/Analytics.md target=_blank rel=noopener><img src=/avito-android/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div><div><a class="flex justify-end" href=/avito-android/docs/contacts><span>Contact us</span></a></div></div></footer><div class=book-comments></div><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#что-умеем-замерять>Что умеем замерять</a><ul><li><a href=#пользовательские-метрики>Пользовательские метрики</a></li><li><a href=#этапы-работы-экрана>Этапы работы экрана</a></li></ul></li><li><a href=#что-нужно-знать-перед-написанием-кода>Что нужно знать перед написанием кода</a></li><li><a href=#типы-замеряемых-экранов>Типы замеряемых экранов</a><ul><li><a href=#самостоятельный-экран>Самостоятельный экран</a></li><li><a href=#cубкомпонент>Cубкомпонент</a></li><li><a href=#экран-с-предзагрузкой-данных>Экран с предзагрузкой данных</a></li></ul></li><li><a href=#типы-трекеров>Типы трекеров</a></li><li><a href=#типы-флоу-экранов>Типы флоу экранов</a><ul><li><a href=#стандартный-флоу-экранов>Стандартный флоу экранов</a></li><li><a href=#флоу-экранов-с-предзагрузкой>Флоу экранов с предзагрузкой</a></li><li><a href=#пример-с-главной-страницы>Пример с главной страницы</a></li></ul></li><li><a href=#как-замерять-перформанс-самостоятельного-экрана-или-субкомпонента>Как замерять перформанс самостоятельного экрана или субкомпонента</a></li><li><a href=#как-выглядит-трекер-с-предзагрузкой>Как выглядит трекер с предзагрузкой</a></li><li><a href=#как-во-время-разработки-проверить-что-замеры-отправляются>Как во время разработки проверить, что замеры отправляются</a><ul><li><a href=#пример-в-графане>Пример в графане</a></li></ul></li></ul></nav></aside></main></body></html>
