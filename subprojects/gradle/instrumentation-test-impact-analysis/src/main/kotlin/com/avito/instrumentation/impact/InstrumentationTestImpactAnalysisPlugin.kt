@@ -40,7 +40,7 @@ class InstrumentationTestImpactAnalysisPlugin : Plugin<Project> {
                 description = "Analyze androidTest bytecode to collect maps: [Screen:Test], [Screen:RootId]"
 
                 //todo we should also support flavors here
-                dependsOn("${project.path}:compile${it.testBuildType.capitalize()}AndroidTestSources")
+                dependsOn("${project.path}:compileDevelop${it.testBuildType.capitalize()}AndroidTestKotlin")
             }
 
             project.tasks.register<AnalyzeTestImpactTask>(
